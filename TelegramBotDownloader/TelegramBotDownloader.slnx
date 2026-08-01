@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TelegramBotDownloader.Application/TelegramBotDownloader.Application.csproj" />
+  <Project Path="TelegramBotDownloader.Console\TelegramBotDownloader.Console.csproj" />
+  <Project Path="TelegramBotDownloader.Domain/TelegramBotDownloader.Domain.csproj" />
+  <Project Path="TelegramBotDownloader.Infrastructure/TelegramBotDownloader.Infrastructure.csproj" />
+</Solution>
