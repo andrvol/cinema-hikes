@@ -10,7 +10,7 @@ public class RezkaFilmParserFacade : IFilmParserFacade
 {
     public async Task<string> GetFilmSrc(string pageUrl, string videoQuality)
     {
-        IBrowserConfig kievBrowserConfig = new Kiev1920X1080BrowserConfig();
+        IBrowserConfig kievBrowserConfig = new RandomBrowserConfig();
         
         IBrowserFactory playwrightFactory = new PlaywrightBrowserFactory();
         var page = await playwrightFactory.CreatePageAsync(kievBrowserConfig);

@@ -32,7 +32,7 @@ async Task OnMessage(Message message, UpdateType type)
 
         Console.WriteLine(url);
 
-        await SendVideoFromDirectUrl(bot, message.Chat.Id, url);
+        // await SendVideoFromDirectUrl(bot, message.Chat.Id, url);
     }
     catch (Exception ex)
     {
