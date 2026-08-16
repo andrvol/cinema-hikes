@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 *.swp
 
 telegram-bot-api-data/
+
+# Appsettings (safe connection to db)
+appsettings.json
