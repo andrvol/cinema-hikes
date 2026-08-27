@@ -1,0 +1,6 @@
+<Solution>
+    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Application/CinemaHikesBackend.Application.csproj" />
+    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Console/CinemaHikesBackend.Console.csproj" />
+    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Domain/CinemaHikesBackend.Domain.csproj" />
+    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Infrastructure/CinemaHikesBackend.Infrastructure.csproj" />
+</Solution>
