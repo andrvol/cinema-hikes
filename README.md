@@ -104,16 +104,16 @@ CinemaHikes.slnx
 │   │   │
 │   │   ├── Persistence/
 │   │   │   ├── CinemaHikesDbContext.cs
-│   │   │   ├── EntityTypeConfigurations/
-│   │   │   │   ├── MovieEntityTypeConfiguration.cs
-│   │   │   │   ├── GenreEntityTypeConfiguration.cs
-│   │   │   │   ├── VideoSourceEntityTypeConfiguration.cs
-│   │   │   │   ├── MovieLinkEntityTypeConfiguration.cs     # unique index (MovieId, Quality)
+│   │   │   ├── Configurations/
+│   │   │   │   ├── MovieConfiguration.cs
+│   │   │   │   ├── GenreConfiguration.cs
+│   │   │   │   ├── VideoSourceConfiguration.cs
+│   │   │   │   ├── MovieLinkConfiguration.cs     # unique index (MovieId, Quality)
 │   │   │   │   └── ...
 │   │   │   └── Migrations/
 │   │   │
 │   │   ├── Identity/
-│   │   │   ├── AppUser.cs : IdentityUser<int>
+│   │   │   ├── AppUser.cs : IdentityUser<Guid>
 │   │   │   └── IdentityConfig.cs
 │   │   │
 │   │   ├── Repositories/
