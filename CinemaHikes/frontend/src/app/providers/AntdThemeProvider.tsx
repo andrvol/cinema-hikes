@@ -1,5 +1,5 @@
 import {ConfigProvider,theme} from 'antd';
-import {ReactNode} from 'react';
+import type{ReactNode} from 'react';
 
 export const AntdThemeProvider = ({children}:{children:ReactNode}) => {
     return(
