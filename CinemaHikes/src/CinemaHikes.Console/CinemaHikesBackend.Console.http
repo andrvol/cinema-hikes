@@ -1,0 +1,6 @@
+@CinemaHikesBackend.Console_HostAddress = http://localhost:5171
+
+GET {{CinemaHikesBackend.Console_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
