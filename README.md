@@ -100,18 +100,21 @@ CinemaHikes.slnx
 │   │       └── UserProfile.cs
 │   │
 │   ├── CinemaHikes.Infrastructure/
+│   │   │
+│   │   ├── DependencyInjection.cs
+│   │   │
 │   │   ├── Persistence/
 │   │   │   ├── CinemaHikesDbContext.cs
-│   │   │   ├── Configurations/
-│   │   │   │   ├── MovieConfiguration.cs
-│   │   │   │   ├── GenreConfiguration.cs
-│   │   │   │   ├── VideoSourceConfiguration.cs
-│   │   │   │   ├── MovieLinkConfiguration.cs     # unique index (MovieId, Quality)
+│   │   │   ├── EntityTypeConfigurations/
+│   │   │   │   ├── MovieEntityTypeConfiguration.cs
+│   │   │   │   ├── GenreEntityTypeConfiguration.cs
+│   │   │   │   ├── VideoSourceEntityTypeConfiguration.cs
+│   │   │   │   ├── MovieLinkEntityTypeConfiguration.cs     # unique index (MovieId, Quality)
 │   │   │   │   └── ...
 │   │   │   └── Migrations/
 │   │   │
 │   │   ├── Identity/
-│   │   │   ├── AppUser.cs : IdentityUser<Guid>
+│   │   │   ├── AppUser.cs : IdentityUser<int>
 │   │   │   └── IdentityConfig.cs
 │   │   │
 │   │   ├── Repositories/
