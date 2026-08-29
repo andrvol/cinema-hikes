@@ -1,6 +1,6 @@
 <Solution>
-    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Application/CinemaHikesBackend.Application.csproj" />
-    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Console/CinemaHikesBackend.Console.csproj" />
-    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Domain/CinemaHikesBackend.Domain.csproj" />
-    <Project Path="CinemaHikesBackend/CinemaHikesBackend.Infrastructure/CinemaHikesBackend.Infrastructure.csproj" />
+    <Project Path="src\CinemaHikes.Application\CinemaHikes.Application.csproj" />
+    <Project Path="src\CinemaHikes.Console\CinemaHikes.Console.csproj" />
+    <Project Path="src\CinemaHikes.Domain\CinemaHikes.Domain.csproj" />
+    <Project Path="src\CinemaHikes.Infrastructure\CinemaHikes.Infrastructure.csproj" />
 </Solution>
