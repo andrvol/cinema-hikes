@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>CinemaHikes — Fullstack UML Доска</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #ffffff;
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1a1a1a;
+    height: 100%;
+  }
+  #header { padding: 18px 24px 8px; }
+  h1 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  p.subtitle { color: #666; font-size: 13px; margin: 0 0 8px; }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: #444; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .legend-section { font-weight: 600; margin-right: 4px; color: #111; }
+
+  #viewport {
+    position: relative;
+    width: 100%; height: 80vh;
+    overflow: hidden;
+    border-top: 1px solid #e5e5e5;
+    background: #f5f5f3;
+    background-image: radial-gradient(#e0e0dd 1px, transparent 1px);
+    background-size: 24px 24px;
+    cursor: grab;
+  }
+  #viewport.dragging-canvas { cursor: grabbing; }
+  #canvas { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+  #edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
+
+  .card {
+    position: absolute;
+    width: 210px;
+    background: #ffffff;
+    border: 1.5px solid #6366F1;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    font-size: 12.5px;
+    user-select: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-header {
+    padding: 7px 10px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    cursor: grab;
+    border-radius: 7px 7px 0 0;
+  }
+  .card.dragging .card-header { cursor: grabbing; }
+  .card-section { padding: 5px 8px 6px; border-top: 1px dashed rgba(0,0,0,0.12); }
+  .section-label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 3px; }
+  .row-item { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+  .row-item input {
+    flex: 1; min-width: 0;
+    border: none; border-bottom: 1px solid transparent;
+    background: transparent; font-size: 12px; font-family: "Consolas", monospace;
+    padding: 1px 2px; color: #1a1a1a;
+  }
+  .row-item input:hover, .row-item input:focus { border-bottom: 1px solid #6366F1; outline: none; }
+  .row-item .remove {
+    border: none; background: none; color: #b5b5b5; cursor: pointer; font-size: 13px;
+    line-height: 1; padding: 0 2px; flex-shrink: 0;
+  }
+  .row-item .remove:hover { color: #d4534e; }
+  .add-row {
+    border: none; background: none; color: #6366F1; font-size: 11.5px;
+    cursor: pointer; padding: 2px 0; font-family: inherit;
+  }
+  .add-row:hover { text-decoration: underline; }
+
+  /* Backend Стили */
+  .l-domain .card-header { background: #EEF2FF; color: #26215C; }
+  .l-application .card-header { background: #E1F5EE; color: #04342C; }
+  .l-infrastructure .card-header { background: #FAECE7; color: #4A1B0C; }
+  .l-webapi .card-header { background: #FBEAF0; color: #4B1528; }
+  .l-bot .card-header { background: #FAEEDA; color: #412402; }
+
+  /* Frontend Стили */
+  .l-fe-app .card-header { background: #E0F2FE; color: #0369A1; }
+  .l-fe-layouts .card-header { background: #F3E8FF; color: #6B21A8; }
+  .l-fe-pages .card-header { background: #FEF3C7; color: #92400E; }
+  .l-fe-features .card-header { background: #DCFCE7; color: #166534; }
+  .l-fe-shared .card-header { background: #F1F5F9; color: #334155; }
+
+  /* Стили для подсветки активных карточек и связей */
+  #canvas.has-selection .card { opacity: 0.25; }
+  #canvas.has-selection .card.active-target {
+    opacity: 1;
+    border-width: 2.5px;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+  }
+  #canvas.has-selection .card.active-connected {
+    opacity: 1;
+    border-width: 2px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  line { transition: opacity 0.2s ease, stroke-width 0.2s ease; }
+  #edges.has-selection line { opacity: 0.15; }
+  #edges.has-selection line.active-edge { opacity: 1; stroke-width: 2.2px; }
+
+  #controls { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
+  #controls button { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #d5d5d5; background: #ffffff; font-size: 16px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  #controls button:hover { background: #f0f0f0; }
+  #zoomLabel { position: absolute; left: 16px; bottom: 16px; font-size: 12px; color: #666; background: #ffffffcc; padding: 4px 8px; border-radius: 6px; z-index: 5; }
+  #hint { position: absolute; top: 12px; left: 16px; font-size: 11px; color: #999; z-index: 5; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>CinemaHikes — Fullstack UML доска архитектуры</h1>
+  <p class="subtitle">Тащите карточку за заголовок, чтобы переставить. Кликните по заголовку карточки, чтобы подсветить ее и все связанные элементы.</p>
+  
+  <div class="legend">
+    <span class="legend-section">Frontend:</span>
+    <span><span class="swatch" style="background:#E0F2FE"></span>App/Providers</span>
+    <span><span class="swatch" style="background:#F3E8FF"></span>Layouts</span>
+    <span><span class="swatch" style="background:#FEF3C7"></span>Pages</span>
+    <span><span class="swatch" style="background:#DCFCE7"></span>Features</span>
+    <span><span class="swatch" style="background:#F1F5F9"></span>Shared</span>
+  </div>
+  <div class="legend">
+    <span class="legend-section">Backend:</span>
+    <span><span class="swatch" style="background:#EEF2FF"></span>Domain</span>
+    <span><span class="swatch" style="background:#9FE1CB"></span>Application</span>
+    <span><span class="swatch" style="background:#F5C4B3"></span>Infrastructure</span>
+    <span><span class="swatch" style="background:#F4C0D1"></span>WebApi</span>
+    <span><span class="swatch" style="background:#FAC775"></span>TelegramBot</span>
+    <span>| — assoc · ┄▷ realize · ┄› depend</span>
+  </div>
+</div>
+
+<div id="viewport">
+  <div id="hint">Колесо = зум, перетаскивание фона = панорама, клик по заголовку = подсветка связей</div>
+  <div id="canvas">
+    <svg id="edges"></svg>
+  </div>
+  <div id="zoomLabel">100%</div>
+  <div id="controls">
+    <button id="zoomIn" title="Приблизить">+</button>
+    <button id="zoomOut" title="Отдалить">−</button>
+    <button id="zoomFit" title="Вписать по размеру">⤢</button>
+    <button id="zoomReset" title="Сбросить">1:1</button>
+  </div>
+</div>
+
+<script>
+const layers = {
+  // --- FRONTEND ---
+  fe_app: ["App", "AuthProvider", "AntdThemeProvider", "QueryProvider", "useAuthStore"],
+  fe_layouts: ["MainLayout", "AdminLayout", "AuthLayout"],
+  fe_pages: ["HomePage", "CatalogPage", "MoviePage", "LoginPage", "RegisterPage", "ProfilePage", "DashboardPage", "MoviesMgmtPage", "UsersMgmtPage"],
+  fe_features: ["AuthFeature", "CatalogFeature", "MovieDetailsFeature", "UserProfileFeature", "AdminFeature"],
+  fe_shared: ["axiosClient", "dtos", "MovieCardUI", "GenreTagUI"],
+
+  // --- BACKEND ---
+  webapi: ["MoviesController","AuthController","FavoritesController","HistoryController","ReviewsController","AdminMoviesController","AdminAnalyticsController","AdminUsersController"],
+  application: ["MovieService","MovieDownloadService","TelegramSearchService","GenreService","AuthService","FavoriteService","ViewHistoryService","ReviewService","AdminMovieService","AdminAnalyticsService"],
+  domain: ["Movie","Genre","MovieGenre","VideoSource","MovieLink","Review","FavoriteMovie","ViewHistoryEntry",
+    "IUserMovieRelation","IMovieRepository","IGenreRepository","IVideoSourceRepository","IMovieLinkRepository",
+    "IReviewRepository","IUserMovieRelationRepository","IParsingSourceRepository","IUnitOfWork","IJwtTokenService",
+    "ICurrentUserService","IBrowserConfig","IBrowserFactory","IFilmParserFacade","IPageConfig","IFilmUrlParser",
+    "IPageElementParser","ITelegramFileSender","IVideoSizeChecker"],
+  infrastructure: ["CinemaHikesDbContext","AppUser","MovieRepository","GenreRepository","VideoSourceRepository",
+    "MovieLinkRepository","ReviewRepository","UserMovieRelationRepository","ParsingSourceRepository","UnitOfWork",
+    "RandomBrowserConfig","RezkaPageConfig","RezkaFilmParserFacade","PlaywrightBrowserFactory","RezkaFilmUrlParser",
+    "RezkaGearIconParser","RezkaVideoQualityMenuParser","BrowserProfileProvider","TelegramFileSender",
+    "VideoSizeChecker","JwtTokenService","CurrentUserService","RevalidateMovieLinksJob"],
+  bot: ["SearchTextHandler","MovieSelectedCallbackHandler","DownloadCallbackHandler"]
+};
+
+const relations = [
+  // --- FRONTEND INTERNAL RELATIONS ---
+  ["App", "AuthProvider", "depend"],
+  ["App", "AntdThemeProvider", "depend"],
+  ["App", "QueryProvider", "depend"],
+  ["AuthProvider", "useAuthStore", "depend"],
+  
+  ["MainLayout", "MovieCardUI", "depend"],
+  ["AdminLayout", "useAuthStore", "depend"],
+
+  ["HomePage", "MainLayout", "depend"],
+  ["CatalogPage", "MainLayout", "depend"],
+  ["CatalogPage", "CatalogFeature", "depend"],
+  ["MoviePage", "MainLayout", "depend"],
+  ["MoviePage", "MovieDetailsFeature", "depend"],
+  ["LoginPage", "AuthLayout", "depend"],
+  ["LoginPage", "AuthFeature", "depend"],
+  ["RegisterPage", "AuthLayout", "depend"],
+  ["RegisterPage", "AuthFeature", "depend"],
+  ["ProfilePage", "MainLayout", "depend"],
+  ["ProfilePage", "UserProfileFeature", "depend"],
+  ["DashboardPage", "AdminLayout", "depend"],
+  ["DashboardPage", "AdminFeature", "depend"],
+  ["MoviesMgmtPage", "AdminLayout", "depend"],
+  ["MoviesMgmtPage", "AdminFeature", "depend"],
+  ["UsersMgmtPage", "AdminLayout", "depend"],
+  ["UsersMgmtPage", "AdminFeature", "depend"],
+
+  ["AuthFeature", "axiosClient", "depend"],
+  ["AuthFeature", "useAuthStore", "depend"],
+  ["CatalogFeature", "axiosClient", "depend"],
+  ["CatalogFeature", "MovieCardUI", "depend"],
+  ["CatalogFeature", "GenreTagUI", "depend"],
+  ["MovieDetailsFeature", "axiosClient", "depend"],
+  ["UserProfileFeature", "axiosClient", "depend"],
+  ["AdminFeature", "axiosClient", "depend"],
+
+  ["axiosClient", "dtos", "depend"],
+
+  // --- FRONTEND TO BACKEND API RELATIONS ---
+  ["AuthFeature", "AuthController", "depend"],
+  ["CatalogFeature", "MoviesController", "depend"],
+  ["MovieDetailsFeature", "MoviesController", "depend"],
+  ["MovieDetailsFeature", "ReviewsController", "depend"],
+  ["UserProfileFeature", "FavoritesController", "depend"],
+  ["UserProfileFeature", "HistoryController", "depend"],
+  ["AdminFeature", "AdminMoviesController", "depend"],
+  ["AdminFeature", "AdminAnalyticsController", "depend"],
+  ["AdminFeature", "AdminUsersController", "depend"],
+
+  // --- BACKEND INTERNAL RELATIONS ---
+  ["Movie","MovieGenre","assoc"],["Genre","MovieGenre","assoc"],["Movie","VideoSource","assoc"],
+  ["Movie","MovieLink","assoc"],["Movie","Review","assoc"],
+  ["FavoriteMovie","IUserMovieRelation","realize"],["ViewHistoryEntry","IUserMovieRelation","realize"],
+  ["MovieRepository","IMovieRepository","realize"],["GenreRepository","IGenreRepository","realize"],
+  ["VideoSourceRepository","IVideoSourceRepository","realize"],["MovieLinkRepository","IMovieLinkRepository","realize"],
+  ["ReviewRepository","IReviewRepository","realize"],["UserMovieRelationRepository","IUserMovieRelationRepository","realize"],
+  ["ParsingSourceRepository","IParsingSourceRepository","realize"],["UnitOfWork","IUnitOfWork","realize"],
+  ["JwtTokenService","IJwtTokenService","realize"],["CurrentUserService","ICurrentUserService","realize"],
+  ["RandomBrowserConfig","IBrowserConfig","realize"],["PlaywrightBrowserFactory","IBrowserFactory","realize"],
+  ["RezkaFilmParserFacade","IFilmParserFacade","realize"],["RezkaPageConfig","IPageConfig","realize"],
+  ["RezkaFilmUrlParser","IFilmUrlParser","realize"],["RezkaGearIconParser","IPageElementParser","realize"],
+  ["RezkaVideoQualityMenuParser","IPageElementParser","realize"],["TelegramFileSender","ITelegramFileSender","realize"],
+  ["VideoSizeChecker","IVideoSizeChecker","realize"],
+  ["MovieRepository","CinemaHikesDbContext","depend"],["GenreRepository","CinemaHikesDbContext","depend"],
+  ["VideoSourceRepository","CinemaHikesDbContext","depend"],["MovieLinkRepository","CinemaHikesDbContext","depend"],
+  ["ReviewRepository","CinemaHikesDbContext","depend"],["UserMovieRelationRepository","CinemaHikesDbContext","depend"],
+  ["ParsingSourceRepository","CinemaHikesDbContext","depend"],["UnitOfWork","CinemaHikesDbContext","depend"],
+  ["CinemaHikesDbContext","AppUser","depend"],
+  ["RezkaFilmParserFacade","IBrowserConfig","depend"],["RezkaFilmParserFacade","IBrowserFactory","depend"],
+  ["RezkaFilmParserFacade","IPageConfig","depend"],["RezkaFilmParserFacade","IPageElementParser","depend"],
+  ["RezkaFilmParserFacade","IFilmUrlParser","depend"],["RandomBrowserConfig","BrowserProfileProvider","depend"],
+  ["MovieService","IMovieRepository","depend"],["MovieService","IGenreRepository","depend"],
+  ["MovieService","IVideoSourceRepository","depend"],["MovieDownloadService","IMovieLinkRepository","depend"],
+  ["MovieDownloadService","IVideoSourceRepository","depend"],["MovieDownloadService","IFilmParserFacade","depend"],
+  ["MovieDownloadService","IVideoSizeChecker","depend"],["MovieDownloadService","ITelegramFileSender","depend"],
+  ["TelegramSearchService","IMovieRepository","depend"],["GenreService","IGenreRepository","depend"],
+  ["AuthService","IJwtTokenService","depend"],["FavoriteService","IUserMovieRelationRepository","depend"],
+  ["ViewHistoryService","IUserMovieRelationRepository","depend"],["ReviewService","IReviewRepository","depend"],
+  ["AdminMovieService","IMovieRepository","depend"],["AdminMovieService","IGenreRepository","depend"],
+  ["AdminMovieService","IVideoSourceRepository","depend"],["AdminAnalyticsService","IUserMovieRelationRepository","depend"],
+  ["AdminAnalyticsService","IReviewRepository","depend"],
+  ["RevalidateMovieLinksJob","IMovieLinkRepository","depend"],["RevalidateMovieLinksJob","IFilmParserFacade","depend"],
+  ["MoviesController","MovieService","depend"],["AuthController","AuthService","depend"],
+  ["FavoritesController","FavoriteService","depend"],["HistoryController","ViewHistoryService","depend"],
+  ["ReviewsController","ReviewService","depend"],["AdminMoviesController","AdminMovieService","depend"],
+  ["AdminAnalyticsController","AdminAnalyticsService","depend"],
+  ["SearchTextHandler","TelegramSearchService","depend"],["MovieSelectedCallbackHandler","MovieService","depend"],
+  ["DownloadCallbackHandler","MovieDownloadService","depend"]
+];
+
+const COLS = 9, COL_W = 240, ROW_H = 130, CARD_W = 210, BAND_GAP = 90, PAD = 40;
+
+const positions = {};
+let bandY = PAD;
+for (const layerName of Object.keys(layers)) {
+  const names = layers[layerName];
+  const rows = Math.ceil(names.length / COLS);
+  const cssLayer = layerName.startsWith("fe_") ? `fe-${layerName.replace("fe_", "")}` : layerName;
+  
+  names.forEach((name, i) => {
+    const col = i % COLS, row = Math.floor(i / COLS);
+    positions[name] = { x: PAD + col * COL_W, y: bandY + row * ROW_H, layer: cssLayer };
+  });
+  bandY += rows * ROW_H + BAND_GAP;
+}
+const CANVAS_H = bandY;
+const CANVAS_W = PAD * 2 + COLS * COL_W;
+
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('edges');
+svg.setAttribute('width', CANVAS_W);
+svg.setAttribute('height', CANVAS_H);
+svg.setAttribute('viewBox', `0 0 ${CANVAS_W} ${CANVAS_H}`);
+svg.innerHTML = `<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6"/>
+  </marker>
+  <marker id="tri" viewBox="0 0 12 10" refX="10" refY="5" markerWidth="10" markerHeight="9" orient="auto-start-reverse">
+    <path d="M1 1L11 5L1 9Z" fill="white" stroke="context-stroke" stroke-width="1.2"/>
+  </marker>
+</defs>`;
+
+const cardEls = {};
+Object.keys(positions).forEach(name => {
+  const pos = positions[name];
+  const el = document.createElement('div');
+  el.className = `card l-${pos.layer}`;
+  el.style.left = pos.x + 'px';
+  el.style.top = pos.y + 'px';
+  el.style.width = CARD_W + 'px';
+  el.dataset.name = name;
+  el.innerHTML = `
+    <div class="card-header">${name}</div>
+    <div class="card-section" data-type="field">
+      <div class="section-label">Поля / Props</div>
+      <div class="rows"></div>
+      <button class="add-row" data-type="field">+ поле</button>
+    </div>
+    <div class="card-section" data-type="method">
+      <div class="section-label">Методы / Hooks</div>
+      <div class="rows"></div>
+      <button class="add-row" data-type="method">+ метод</button>
+    </div>`;
+  canvas.appendChild(el);
+  cardEls[name] = el;
+});
+
+function addRow(container, focus) {
+  const row = document.createElement('div');
+  row.className = 'row-item';
+  row.innerHTML = `<input type="text" placeholder="имя: тип"><button class="remove">×</button>`;
+  const input = row.querySelector('input');
+  const removeBtn = row.querySelector('.remove');
+  removeBtn.addEventListener('click', () => { row.remove(); redrawEdges(); });
+  input.addEventListener('input', () => redrawEdges());
+  container.appendChild(row);
+  if (focus) input.focus();
+  redrawEdges();
+}
+
+document.querySelectorAll('.add-row').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const section = btn.closest('.card-section');
+    addRow(section.querySelector('.rows'), true);
+  });
+});
+
+function clipPoint(cx, cy, w, h, tx, ty) {
+  const dx = tx - cx, dy = ty - cy;
+  if (dx === 0 && dy === 0) return { x: cx, y: cy };
+  const halfW = w / 2, halfH = h / 2;
+  const sx = dx !== 0 ? halfW / Math.abs(dx) : Infinity;
+  const sy = dy !== 0 ? halfH / Math.abs(dy) : Infinity;
+  const s = Math.min(sx, sy);
+  return { x: cx + dx * s, y: cy + dy * s };
+}
+
+function redrawEdges() {
+  const lines = [];
+  relations.forEach(([from, to, type], index) => {
+    const a = cardEls[from], b = cardEls[to];
+    if (!a || !b) return;
+    const ax = parseFloat(a.style.left), ay = parseFloat(a.style.top);
+    const bx = parseFloat(b.style.left), by = parseFloat(b.style.top);
+    const aw = a.offsetWidth, ah = a.offsetHeight;
+    const bw = b.offsetWidth, bh = b.offsetHeight;
+    const acx = ax + aw / 2, acy = ay + ah / 2;
+    const bcx = bx + bw / 2, bcy = by + bh / 2;
+    const p1 = clipPoint(acx, acy, aw, ah, bcx, bcy);
+    const p2 = clipPoint(bcx, bcy, bw, bh, acx, acy);
+    const dashed = type !== 'assoc';
+    const stroke = type === 'realize' ? '#0F6E56' : (type === 'depend' ? '#999999' : '#6366F1');
+    const marker = type === 'realize' ? 'tri' : 'arr';
+    lines.push(`<line data-from="${from}" data-to="${to}" id="edge-${index}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="${stroke}" stroke-width="1.1" ${dashed ? 'stroke-dasharray="5 4"' : ''} marker-end="url(#${marker})"/>`);
+  });
+  const defs = svg.querySelector('defs').outerHTML;
+  svg.innerHTML = defs + lines.join('');
+}
+redrawEdges();
+
+// --- Логика выделения карточек и связей ---
+let selectedCardName = null;
+
+function clearHighlights() {
+  selectedCardName = null;
+  canvas.classList.remove('has-selection');
+  svg.classList.remove('has-selection');
+  Object.values(cardEls).forEach(c => {
+    c.classList.remove('active-target', 'active-connected');
+  });
+  svg.querySelectorAll('line').forEach(l => l.classList.remove('active-edge'));
+}
+
+function highlightConnections(cardName) {
+  if (selectedCardName === cardName) {
+    clearHighlights();
+    return;
+  }
+  
+  clearHighlights();
+  selectedCardName = cardName;
+  
+  canvas.classList.add('has-selection');
+  svg.classList.add('has-selection');
+  
+  const connectedCards = new Set();
+  
+  relations.forEach(([from, to], index) => {
+    if (from === cardName || to === cardName) {
+      connectedCards.add(from);
+      connectedCards.add(to);
+      const edgeEl = document.getElementById(`edge-${index}`);
+      if (edgeEl) edgeEl.classList.add('active-edge');
+    }
+  });
+
+  connectedCards.forEach(name => {
+    if (cardEls[name]) {
+      if (name === cardName) {
+        cardEls[name].classList.add('active-target');
+      } else {
+        cardEls[name].classList.add('active-connected');
+      }
+    }
+  });
+}
+
+document.querySelectorAll('.card-header').forEach(header => {
+  header.addEventListener('mousedown', (e) => {
+    e.stopPropagation();
+    const card = header.closest('.card');
+    const cardName = card.dataset.name;
+
+    highlightConnections(cardName);
+
+    card.classList.add('dragging');
+    const startX = e.clientX, startY = e.clientY;
+    const startLeft = parseFloat(card.style.left);
+    const startTop = parseFloat(card.style.top);
+    
+    function onMove(e2) {
+      const dx = (e2.clientX - startX) / scale;
+      const dy = (e2.clientY - startY) / scale;
+      card.style.left = (startLeft + dx) + 'px';
+      card.style.top = (startTop + dy) + 'px';
+      redrawEdges();
+      
+      if (selectedCardName) {
+        relations.forEach(([from, to], index) => {
+          if (from === selectedCardName || to === selectedCardName) {
+            const edgeEl = document.getElementById(`edge-${index}`);
+            if (edgeEl) edgeEl.classList.add('active-edge');
+          }
+        });
+      }
+    }
+    
+    function onUp() {
+      card.classList.remove('dragging');
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    }
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  });
+});
+
+document.querySelectorAll('.row-item input').forEach(inp => {
+  inp.addEventListener('mousedown', e => e.stopPropagation());
+});
+
+const viewport = document.getElementById('viewport');
+const zoomLabel = document.getElementById('zoomLabel');
+let scale = 1, tx = 0, ty = 0;
+let isPanning = false, lastX = 0, lastY = 0;
+
+function apply() {
+  canvas.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+  zoomLabel.textContent = Math.round(scale * 100) + '%';
+}
+
+function fitToView() {
+  const vpRect = viewport.getBoundingClientRect();
+  const padding = 80;
+  const scaleX = (vpRect.width - padding) / CANVAS_W;
+  const scaleY = (vpRect.height - padding) / CANVAS_H;
+  scale = Math.min(scaleX, scaleY, 1.2);
+  tx = (vpRect.width - CANVAS_W * scale) / 2;
+  ty = (vpRect.height - CANVAS_H * scale) / 2;
+  apply();
+}
+fitToView();
+
+viewport.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const delta = -e.deltaY * 0.0015;
+  const newScale = Math.min(8, Math.max(0.05, scale * (1 + delta)));
+  const ratio = newScale / scale;
+  tx = mx - (mx - tx) * ratio;
+  ty = my - (my - ty) * ratio;
+  scale = newScale;
+  apply();
+}, { passive: false });
+
+viewport.addEventListener('mousedown', (e) => {
+  if (e.target === viewport || e.target === canvas || e.target === svg) {
+    clearHighlights();
+  }
+  isPanning = true; lastX = e.clientX; lastY = e.clientY;
+  viewport.classList.add('dragging-canvas');
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  tx += e.clientX - lastX; ty += e.clientY - lastY;
+  lastX = e.clientX; lastY = e.clientY;
+  apply();
+});
+window.addEventListener('mouseup', () => { isPanning = false; viewport.classList.remove('dragging-canvas'); });
+
+document.getElementById('zoomIn').addEventListener('click', () => {
+  const rect = viewport.getBoundingClientRect();
+  const cx = rect.width / 2, cy = rect.height / 2;
+  const newScale = Math.min(8, scale * 1.25);
+  const ratio = newScale / scale;
+  tx = cx - (cx - tx) * ratio; ty = cy - (cy - ty) * ratio;
+  scale = newScale; apply();
+});
+document.getElementById('zoomOut').addEventListener('click', () => {
+  const rect = viewport.getBoundingClientRect();
+  const cx = rect.width / 2, cy = rect.height / 2;
+  const newScale = Math.max(0.05, scale / 1.25);
+  const ratio = newScale / scale;
+  tx = cx - (cx - tx) * ratio; ty = cy - (cy - ty) * ratio;
+  scale = newScale; apply();
+});
+document.getElementById('zoomFit').addEventListener('click', fitToView);
+document.getElementById('zoomReset').addEventListener('click', () => { scale = 1; tx = 0; ty = 0; apply(); });
+</script>
+
+</body>
+</html>
