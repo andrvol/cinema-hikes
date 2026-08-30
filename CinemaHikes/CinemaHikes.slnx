@@ -1,6 +1,7 @@
 <Solution>
+    <Project Path="src/CinemaHikes.TelegramBotDownloader/CinemaHikes.TelegramBotDownloader.csproj" />
     <Project Path="src\CinemaHikes.Application\CinemaHikes.Application.csproj" />
-    <Project Path="src\CinemaHikes.Console\CinemaHikes.Console.csproj" />
     <Project Path="src\CinemaHikes.Domain\CinemaHikes.Domain.csproj" />
     <Project Path="src\CinemaHikes.Infrastructure\CinemaHikes.Infrastructure.csproj" />
+    <Project Path="src\CinemaHikes.WebApi\CinemaHikes.WebApi.csproj" />
 </Solution>
