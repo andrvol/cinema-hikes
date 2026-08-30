@@ -2,7 +2,10 @@
 
 ## Architecture
 
+
 ### ⚙️ Backend
+
+---
 
 ```
 CinemaHikes.slnx
@@ -22,11 +25,13 @@ CinemaHikes.slnx
 │   │   │       ├── MovieLink.cs                 # MovieId, Quality, Url — прямая ссылка (FR-06), обычная таблица без TTL
 │   │   │       └── Review.cs
 │   │   │
+│   │   │   └── Parsing/
+│   │   │       └── ParsingSourceConfig.cs        # конфиг сайта-источника, обслуживается IParsingSourceRepository
+│   │   │
 │   │   ├── Enums/
 │   │   │   ├── SourceStatus.cs                  # Active, Dead, Checking
 │   │   │   ├── VideoQuality.cs                  # Q360, Q480, Q720, Q1080
-│   │   │   ├── ReviewStatus.cs                  # Pending, Approved, Rejected
-│   │   │   └── UserRole.cs                      # Guest, User, Admin
+│   │   │   └── ReviewStatus.cs                  # Pending, Approved, Rejected
 │   │   │
 │   │   ├── Interfaces/                          # Порты (реализуются в Infrastructure)
 │   │   │   ├── Repositories/
@@ -69,6 +74,8 @@ CinemaHikes.slnx
 │   │   │   ├── ViewHistoryService.cs
 │   │   │   ├── ReviewService.cs
 │   │   │   ├── AdminMovieService.cs             # CRUD фильмов/жанров
+│   │   │   ├── AdminSourceService.cs           
+│   │   │   ├── AdminUserService.cs              # управление пользователями/ролями (AspNetUsers)
 │   │   │   └── AdminAnalyticsService.cs         # агрегаты по ViewHistoryEntry/Review
 │   │   │
 │   │   ├── DTOs/
@@ -100,20 +107,21 @@ CinemaHikes.slnx
 │   │
 │   ├── CinemaHikes.Infrastructure/
 │   │   │
-│   │   ├── DependencyInjection.cs
+│   │   ├── DependencyInjection.cs               # AddInfrastructure(IServiceCollection)
 │   │   │
 │   │   ├── Persistence/
 │   │   │   ├── CinemaHikesDbContext.cs
-│   │   │   ├── Configurations/
-│   │   │   │   ├── MovieConfiguration.cs
-│   │   │   │   ├── GenreConfiguration.cs
-│   │   │   │   ├── VideoSourceConfiguration.cs
-│   │   │   │   ├── MovieLinkConfiguration.cs     # unique index (MovieId, Quality)
+│   │   │   ├── EntityTypeConfigurations/
+│   │   │   │   ├── MovieEntityTypeConfiguration.cs
+│   │   │   │   ├── GenreEntityTypeConfiguration.cs
+│   │   │   │   ├── VideoSourceEntityTypeConfiguration.cs
+│   │   │   │   ├── MovieLinkEntityTypeConfiguration.cs     # unique index (MovieId, Quality)
+│   │   │   │   ├── ParsingSourceConfigEntityTypeConfiguration.cs
 │   │   │   │   └── ...
 │   │   │   └── Migrations/
 │   │   │
 │   │   ├── Identity/
-│   │   │   ├── AppUser.cs : IdentityUser<Guid>
+│   │   │   ├── AppUser.cs : IdentityUser<int>
 │   │   │   └── IdentityConfig.cs
 │   │   │
 │   │   ├── Repositories/
@@ -171,13 +179,14 @@ CinemaHikes.slnx
 │   │   │   ├── ReviewsController.cs
 │   │   │   └── Admin/
 │   │   │       ├── AdminMoviesController.cs
+│   │   │       ├── AdminSourcesController.cs
 │   │   │       ├── AdminUsersController.cs
 │   │   │       └── AdminAnalyticsController.cs
 │   │   ├── Middleware/
 │   │   │   └── ExceptionHandlingMiddleware.cs
 │   │   └── Program.cs
 │   │
-│   └── CinemaHikes.TelegramBotDownloader/        # ⭐ основной проект — расширяет ваш текущий Program.cs
+│   └── CinemaHikes.TelegramBotDownloader/
 │       ├── .example.env
 │       ├── Handlers/
 │       │   ├── SearchTextHandler.cs              # текст → TelegramSearchService (FR-05)
@@ -195,6 +204,8 @@ CinemaHikes.slnx
 ```
 
 ### 📃 Frontend
+
+---
 
 ```
 cinema-hikes-frontend/
@@ -285,4 +296,98 @@ cinema-hikes-frontend/
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts               # Настройки сборщика, алиасы путей (@/features, @/shared)
+```
+
+---
+
+### 🗄️ Database
+
+---
+
+```
+CinemaHikes Database (PostgreSQL)
+│
+├── Identity/                          # ASP.NET Core Identity (AppUser : IdentityUser<int>)
+│   ├── AspNetUsers
+│   │   ├── Id               int           [PK]
+│   │   ├── Email             varchar256    UNIQUE
+│   │   ├── UserName           varchar256    UNIQUE
+│   │   ├── PasswordHash        text
+│   │   ├── RegisteredAt         timestamptz   # кастомное поле (FR-08)
+│   │   └── AmountOfHats          int           DEFAULT 0
+│   │
+│   ├── AspNetRoles
+│   │   ├── Id               int           [PK]
+│   │   └── Name              varchar50     UNIQUE
+│   │
+│   └── AspNetUserRoles                # join-таблица AspNetUsers ↔ AspNetRoles
+│       ├── Id               int           [PK]
+│       ├── UserId             int           → FK AspNetUsers
+│       └── RoleId              int           → FK AspNetRoles
+│
+├── Catalog/                            # Каталог фильмов — без актёров/каста
+│   ├── Movies
+│   │   ├── Id               int           [PK]
+│   │   ├── RuTitle           varchar255
+│   │   ├── UaTitle            varchar255
+│   │   ├── RuInEngTitle         varchar255
+│   │   ├── ReleaseYear            smallint
+│   │   ├── PosterUrl               varchar500
+│   │   ├── KpRating                 numeric(3,1)
+│   │   └── CreatedAt                  timestamptz
+│   │
+│   ├── Genres
+│   │   ├── Id               int           [PK]
+│   │   └── Name              varchar50     UNIQUE
+│   │
+│   ├── MovieGenres                     # join-таблица Movies ↔ Genres
+│   │   ├── Id               int           [PK]
+│   │   ├── MovieId            int           → FK Movies
+│   │   └── GenreId             int           → FK Genres
+│   │
+│   ├── VideoSources                    # плеер/источник: PageUrl на сайт-источник (FR-04)
+│   │   ├── Id               int           [PK]
+│   │   ├── MovieId            int           → FK Movies
+│   │   ├── ProviderName         varchar50
+│   │   ├── PageUrl                varchar500
+│   │   ├── Priority                smallint
+│   │   └── Status                   enum (SourceStatus)
+│   │
+│   ├── MovieLinks                      # прямая ссылка (FR-06), обычная таблица без TTL
+│   │   ├── Id               int           [PK]
+│   │   ├── MovieId            int           → FK Movies
+│   │   ├── Quality             enum (VideoQuality)   UNIQUE*
+│   │   ├── Url                  varchar1000
+│   │   └── UpdatedAt              timestamptz          # * UNIQUE(MovieId, Quality)
+│   │
+│   └── Reviews
+│       ├── Id               int           [PK]
+│       ├── MovieId            int           → FK Movies
+│       ├── UserId              int           → FK AspNetUsers
+│       ├── Text                 nvarchar(200)
+│       ├── Rating                smallint
+│       ├── Status                 enum (ReviewStatus)
+│       └── CreatedAt                timestamptz
+│
+├── Users/                              # Личный кабинет (IUserMovieRelation)
+│   ├── FavoriteMovies
+│   │   ├── Id               int           [PK]
+│   │   ├── UserId             int           → FK AspNetUsers
+│   │   ├── MovieId             int           → FK Movies
+│   │   └── CreatedAt             timestamptz
+│   │
+│   └── ViewHistory
+│       ├── Id               int           [PK]
+│       ├── UserId             int           → FK AspNetUsers
+│       ├── MovieId             int           → FK Movies
+│       ├── ProgressSeconds      int
+│       └── CreatedAt              timestamptz
+│
+└── Parsing/                            # обслуживается IParsingSourceRepository
+    └── ParsingSourceConfigs
+        ├── Id               int           [PK]
+        ├── Name              varchar50     UNIQUE
+        ├── BaseUrl             varchar255
+        ├── ParserType           varchar50
+        └── IsEnabled              boolean
 ```

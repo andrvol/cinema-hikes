@@ -5,22 +5,59 @@
     <title>CinemaHikes — Fullstack UML Доска</title>
     <style>
         html, body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             background: #ffffff;
             font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
             color: #1a1a1a;
             height: 100%;
         }
-        #header { padding: 18px 24px 8px; }
-        h1 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
-        p.subtitle { color: #666; font-size: 13px; margin: 0 0 8px; }
-        .legend { display: flex; gap: 14px; font-size: 12px; color: #444; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
-        .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
-        .legend-section { font-weight: 600; margin-right: 4px; color: #111; }
+
+        #header {
+            padding: 18px 24px 8px;
+        }
+
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        p.subtitle {
+            color: #666;
+            font-size: 13px;
+            margin: 0 0 8px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .legend-section {
+            font-weight: 600;
+            margin-right: 4px;
+            color: #111;
+        }
 
         #viewport {
             position: relative;
-            width: 100%; height: 80vh;
+            width: 100%;
+            height: 80vh;
             overflow: hidden;
             border-top: 1px solid #e5e5e5;
             background: #f5f5f3;
@@ -28,9 +65,26 @@
             background-size: 24px 24px;
             cursor: grab;
         }
-        #viewport.dragging-canvas { cursor: grabbing; }
-        #canvas { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
-        #edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
+
+        #viewport.dragging-canvas {
+            cursor: grabbing;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+
+        #edges {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: visible;
+        }
 
         .card {
             position: absolute;
@@ -38,58 +92,157 @@
             background: #ffffff;
             border: 1.5px solid #6366F1;
             border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             font-size: 12.5px;
             user-select: none;
             transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .card-header {
             padding: 7px 10px;
             font-weight: 600;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             cursor: grab;
             border-radius: 7px 7px 0 0;
         }
-        .card.dragging .card-header { cursor: grabbing; }
-        .card-section { padding: 5px 8px 6px; border-top: 1px dashed rgba(0,0,0,0.12); }
-        .section-label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: .03em; margin-bottom: 3px; }
-        .row-item { display: flex; align-items: center; gap: 4px; margin-bottom: 3px; }
+
+        .card.dragging .card-header {
+            cursor: grabbing;
+        }
+
+        .card-section {
+            padding: 5px 8px 6px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.12);
+        }
+
+        .section-label {
+            font-size: 10px;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            margin-bottom: 3px;
+        }
+
+        .row-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
         .row-item input {
-            flex: 1; min-width: 0;
-            border: none; border-bottom: 1px solid transparent;
-            background: transparent; font-size: 12px; font-family: "Consolas", monospace;
-            padding: 1px 2px; color: #1a1a1a;
+            flex: 1;
+            min-width: 0;
+            border: none;
+            border-bottom: 1px solid transparent;
+            background: transparent;
+            font-size: 12px;
+            font-family: "Consolas", monospace;
+            padding: 1px 2px;
+            color: #1a1a1a;
         }
-        .row-item input:hover, .row-item input:focus { border-bottom: 1px solid #6366F1; outline: none; }
+
+        .row-item input:hover, .row-item input:focus {
+            border-bottom: 1px solid #6366F1;
+            outline: none;
+        }
+
         .row-item .remove {
-            border: none; background: none; color: #b5b5b5; cursor: pointer; font-size: 13px;
-            line-height: 1; padding: 0 2px; flex-shrink: 0;
+            border: none;
+            background: none;
+            color: #b5b5b5;
+            cursor: pointer;
+            font-size: 13px;
+            line-height: 1;
+            padding: 0 2px;
+            flex-shrink: 0;
         }
-        .row-item .remove:hover { color: #d4534e; }
+
+        .row-item .remove:hover {
+            color: #d4534e;
+        }
+
         .add-row {
-            border: none; background: none; color: #6366F1; font-size: 11.5px;
-            cursor: pointer; padding: 2px 0; font-family: inherit;
+            border: none;
+            background: none;
+            color: #6366F1;
+            font-size: 11.5px;
+            cursor: pointer;
+            padding: 2px 0;
+            font-family: inherit;
         }
-        .add-row:hover { text-decoration: underline; }
+
+        .add-row:hover {
+            text-decoration: underline;
+        }
 
         /* Backend Стили */
-        .l-domain .card-header { background: #EEF2FF; color: #26215C; }
-        .l-application .card-header { background: #E1F5EE; color: #04342C; }
-        .l-infrastructure .card-header { background: #FAECE7; color: #4A1B0C; }
-        .l-webapi .card-header { background: #FBEAF0; color: #4B1528; }
-        .l-bot .card-header { background: #FAEEDA; color: #412402; }
+        .l-domain .card-header {
+            background: #EEF2FF;
+            color: #26215C;
+        }
+
+        .l-application .card-header {
+            background: #E1F5EE;
+            color: #04342C;
+        }
+
+        .l-infrastructure .card-header {
+            background: #FAECE7;
+            color: #4A1B0C;
+        }
+
+        .l-webapi .card-header {
+            background: #FBEAF0;
+            color: #4B1528;
+        }
+
+        .l-bot .card-header {
+            background: #FAEEDA;
+            color: #412402;
+        }
 
         /* Frontend Стили */
-        .l-fe-app .card-header { background: #E0F2FE; color: #0369A1; }
-        .l-fe-layouts .card-header { background: #F3E8FF; color: #6B21A8; }
-        .l-fe-pages .card-header { background: #FEF3C7; color: #92400E; }
-        .l-fe-features .card-header { background: #DCFCE7; color: #166534; }
-        .l-fe-shared .card-header { background: #F1F5F9; color: #334155; }
+        .l-fe-app .card-header {
+            background: #E0F2FE;
+            color: #0369A1;
+        }
+
+        .l-fe-layouts .card-header {
+            background: #F3E8FF;
+            color: #6B21A8;
+        }
+
+        .l-fe-pages .card-header {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .l-fe-features .card-header {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .l-fe-shared .card-header {
+            background: #F1F5F9;
+            color: #334155;
+        }
 
         /* Database (PostgreSQL) Стили */
-        .card.l-database { border-color: #0891B2; cursor: pointer; }
-        .l-database .card-header { background: #CFFAFE; color: #164E63; }
-        .l-database .card-section[data-type="method"] { display: none; }
+        .card.l-database {
+            border-color: #0891B2;
+            cursor: pointer;
+        }
+
+        .l-database .card-header {
+            background: #CFFAFE;
+            color: #164E63;
+        }
+
+        .l-database .card-section[data-type="method"] {
+            display: none;
+        }
+
         .db-row {
             font-family: "Consolas", monospace;
             font-size: 11.5px;
@@ -99,8 +252,17 @@
             line-height: 1.35;
             word-break: break-word;
         }
-        .db-row .db-type { color: #0E7490; font-weight: 600; }
-        .db-row .db-key { color: #B45309; font-weight: 700; }
+
+        .db-row .db-type {
+            color: #0E7490;
+            font-weight: 600;
+        }
+
+        .db-row .db-key {
+            color: #B45309;
+            font-weight: 700;
+        }
+
         .pk-badge {
             display: inline-block;
             background: #FDE68A;
@@ -113,6 +275,7 @@
             vertical-align: middle;
             margin-right: 2px;
         }
+
         .section-divider {
             position: relative;
             text-align: center;
@@ -125,52 +288,121 @@
         }
 
         /* Стили для подсветки активных карточек и связей */
-        #canvas.has-selection .card { opacity: 0.25; }
+        #canvas.has-selection .card {
+            opacity: 0.25;
+        }
+
         #canvas.has-selection .card.active-target {
             opacity: 1;
             border-width: 2.5px;
             box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
         }
+
         #canvas.has-selection .card.active-connected {
             opacity: 1;
             border-width: 2px;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
         }
 
-        line { transition: opacity 0.2s ease, stroke-width 0.2s ease; }
-        #edges.has-selection line { opacity: 0.15; }
-        #edges.has-selection line.active-edge { opacity: 1; stroke-width: 2.2px; }
+        line {
+            transition: opacity 0.2s ease, stroke-width 0.2s ease;
+        }
 
-        #controls { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
-        #controls button { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #d5d5d5; background: #ffffff; font-size: 16px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        #controls button:hover { background: #f0f0f0; }
-        #controls button.save-btn { background: #0891B2; color: #ffffff; border: none; font-size: 14px; }
-        #controls button.save-btn:hover { background: #0e7490; }
+        #edges.has-selection line {
+            opacity: 0.15;
+        }
 
-        #zoomLabel { position: absolute; left: 16px; bottom: 16px; font-size: 12px; color: #666; background: #ffffffcc; padding: 4px 8px; border-radius: 6px; z-index: 5; }
-        #hint { position: absolute; top: 12px; left: 16px; font-size: 11px; color: #999; z-index: 5; }
+        #edges.has-selection line.active-edge {
+            opacity: 1;
+            stroke-width: 2.2px;
+        }
+
+        #controls {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        #controls button {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid #d5d5d5;
+            background: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        #controls button:hover {
+            background: #f0f0f0;
+        }
+
+        #controls button.save-btn {
+            background: #0891B2;
+            color: #ffffff;
+            border: none;
+            font-size: 14px;
+        }
+
+        #controls button.save-btn:hover {
+            background: #0e7490;
+        }
+
+        #zoomLabel {
+            position: absolute;
+            left: 16px;
+            bottom: 16px;
+            font-size: 12px;
+            color: #666;
+            background: #ffffffcc;
+            padding: 4px 8px;
+            border-radius: 6px;
+            z-index: 5;
+        }
+
+        #hint {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            font-size: 11px;
+            color: #999;
+            z-index: 5;
+        }
 
         /* Модальное окно для DB-карточек */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.4);
             z-index: 100;
             align-items: center;
             justify-content: center;
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
         .modal-card {
             background: #ffffff;
             border-radius: 10px;
             width: 520px;
             max-width: 90vw;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
+
         .modal-header {
             background: #CFFAFE;
             color: #164E63;
@@ -181,21 +413,32 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .modal-header .close-btn {
-            border: none; background: none; font-size: 18px; cursor: pointer; color: #164E63;
+            border: none;
+            background: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #164E63;
         }
+
         .modal-body {
             padding: 16px;
             max-height: 60vh;
             overflow-y: auto;
         }
+
         .modal-field-row {
             display: flex;
             gap: 8px;
             margin-bottom: 8px;
             align-items: center;
         }
-        .modal-field-row.dragging { opacity: 0.35; }
+
+        .modal-field-row.dragging {
+            opacity: 0.35;
+        }
+
         .modal-field-row .drag-handle {
             flex-shrink: 0;
             width: 16px;
@@ -206,7 +449,11 @@
             user-select: none;
             letter-spacing: -2px;
         }
-        .modal-field-row .drag-handle:active { cursor: grabbing; }
+
+        .modal-field-row .drag-handle:active {
+            cursor: grabbing;
+        }
+
         .modal-field-row input {
             padding: 6px 8px;
             border: 1px solid #d1d5db;
@@ -214,12 +461,28 @@
             font-family: "Consolas", monospace;
             font-size: 12px;
         }
-        .modal-field-row .input-name { flex: 2; }
-        .modal-field-row .input-type { flex: 2; }
-        .modal-field-row .input-meta { flex: 1.5; }
-        .modal-field-row .remove-btn {
-            background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 0 4px;
+
+        .modal-field-row .input-name {
+            flex: 2;
         }
+
+        .modal-field-row .input-type {
+            flex: 2;
+        }
+
+        .modal-field-row .input-meta {
+            flex: 1.5;
+        }
+
+        .modal-field-row .remove-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
         .modal-footer {
             padding: 12px 16px;
             background: #f9fafb;
@@ -227,6 +490,7 @@
             display: flex;
             justify-content: space-between;
         }
+
         .btn {
             padding: 6px 12px;
             border-radius: 6px;
@@ -235,19 +499,24 @@
             border: 1px solid #d1d5db;
             background: #ffffff;
         }
+
         .btn-primary {
             background: #0891B2;
             color: #ffffff;
             border: none;
         }
-        .btn-primary:hover { background: #0e7490; }
+
+        .btn-primary:hover {
+            background: #0e7490;
+        }
     </style>
 </head>
 <body>
 
 <div id="header">
     <h1>CinemaHikes — Fullstack UML доска архитектуры</h1>
-    <p class="subtitle">Тащите карточку за заголовок, чтобы переставить. Кликните по заголовку карточки, чтобы подсветить ее и все связанные элементы. Двойной клик по DB-карточке открывает редактор полей.</p>
+    <p class="subtitle">Тащите карточку за заголовок, чтобы переставить. Кликните по заголовку карточки, чтобы
+        подсветить ее и все связанные элементы. Двойной клик по DB-карточке открывает редактор полей.</p>
 
     <div class="legend">
         <span class="legend-section">Frontend:</span>
@@ -273,7 +542,9 @@
 </div>
 
 <div id="viewport">
-    <div id="hint">Колесо = зум, перетаскивание фона = панорама, клик по заголовку = подсветка связей, двойной клик по DB-карточке = редактор</div>
+    <div id="hint">Колесо = зум, перетаскивание фона = панорама, клик по заголовку = подсветка связей, двойной клик по
+        DB-карточке = редактор
+    </div>
     <div id="canvas">
         <svg id="edges"></svg>
     </div>
@@ -292,7 +563,7 @@
     <div class="modal-card">
         <div class="modal-header">
             <span id="modalTableName">Редактирование таблицы</span>
-            <button class="close-btn" id="modalCloseBtn">&times;</button>
+            <button class="close-btn" id="modalCloseBtn">×</button>
         </div>
         <div class="modal-body">
             <div id="modalFieldsContainer"></div>
@@ -320,100 +591,326 @@
         fe_shared: ["axiosClient", "dtos", "MovieCardUI", "GenreTagUI"],
 
         // --- BACKEND ---
-        webapi: ["Program.cs (WebApi)","MoviesController","GenresController","AuthController","FavoritesController","HistoryController","ReviewsController","AdminMoviesController","AdminSourcesController","AdminAnalyticsController","AdminUsersController"],
-        application: ["MovieService","MovieDownloadService","TelegramSearchService","GenreService","AuthService","FavoriteService","ViewHistoryService","ReviewService","AdminMovieService","AdminSourceService","AdminUserService","AdminAnalyticsService"],
-        domain: ["Movie","Genre","MovieGenre","VideoSource","MovieLink","Review","FavoriteMovie","ViewHistoryEntry","ParsingSourceConfig",
-            "IUserMovieRelation","IMovieRepository","IGenreRepository","IVideoSourceRepository","IMovieLinkRepository",
-            "IReviewRepository","IUserMovieRelationRepository","IParsingSourceRepository","IUnitOfWork","IJwtTokenService",
-            "ICurrentUserService","IBrowserConfig","IBrowserFactory","IFilmParserFacade","IPageConfig","IFilmUrlParser",
-            "IPageElementParser","ITelegramFileSender","IVideoSizeChecker"],
-        infrastructure: ["DependencyInjection","CinemaHikesDbContext","AppUser","MovieRepository","GenreRepository","VideoSourceRepository",
-            "MovieLinkRepository","ReviewRepository","UserMovieRelationRepository","ParsingSourceRepository","UnitOfWork",
-            "RandomBrowserConfig","RezkaPageConfig","RezkaFilmParserFacade","PlaywrightBrowserFactory","RezkaFilmUrlParser",
-            "RezkaGearIconParser","RezkaVideoQualityMenuParser","BrowserProfileProvider","TelegramFileSender",
-            "VideoSizeChecker","JwtTokenService","CurrentUserService","RevalidateMovieLinksJob"],
-        bot: ["Program.cs (Bot)","SearchTextHandler","MovieSelectedCallbackHandler","DownloadCallbackHandler"],
+        webapi: ["Program.cs (WebApi)", "MoviesController", "GenresController", "AuthController", "FavoritesController", "HistoryController", "ReviewsController", "AdminMoviesController", "AdminSourcesController", "AdminAnalyticsController", "AdminUsersController"],
+        application: ["MovieService", "MovieDownloadService", "TelegramSearchService", "GenreService", "AuthService", "FavoriteService", "ViewHistoryService", "ReviewService", "AdminMovieService", "AdminSourceService", "AdminUserService", "AdminAnalyticsService"],
+        domain: ["Movie", "Genre", "MovieGenre", "VideoSource", "MovieLink", "Review", "FavoriteMovie", "ViewHistoryEntry", "ParsingSourceConfig",
+            "SourceStatus", "VideoQuality", "ReviewStatus",
+            "IUserMovieRelation", "IMovieRepository", "IGenreRepository", "IVideoSourceRepository", "IMovieLinkRepository",
+            "IReviewRepository", "IUserMovieRelationRepository", "IParsingSourceRepository", "IUnitOfWork", "IJwtTokenService",
+            "ICurrentUserService", "IBrowserConfig", "IBrowserFactory", "IFilmParserFacade", "IPageConfig", "IFilmUrlParser",
+            "IPageElementParser", "ITelegramFileSender", "IVideoSizeChecker"],
+        infrastructure: ["DependencyInjection", "CinemaHikesDbContext", "AppUser", "MovieRepository", "GenreRepository", "VideoSourceRepository",
+            "MovieLinkRepository", "ReviewRepository", "UserMovieRelationRepository", "ParsingSourceRepository", "UnitOfWork",
+            "RandomBrowserConfig", "RezkaPageConfig", "RezkaFilmParserFacade", "PlaywrightBrowserFactory", "RezkaFilmUrlParser",
+            "RezkaGearIconParser", "RezkaVideoQualityMenuParser", "BrowserProfileProvider", "TelegramFileSender",
+            "VideoSizeChecker", "JwtTokenService", "CurrentUserService", "RevalidateMovieLinksJob"],
+        bot: ["Program.cs (Bot)", "SearchTextHandler", "MovieSelectedCallbackHandler", "DownloadCallbackHandler"],
 
         // --- DATABASE (PostgreSQL) ---
-        database: ["AspNetUsers","AspNetRoles","AspNetUserRoles","Movies","Genres","MovieGenres",
-            "VideoSources","MovieLinks","Reviews","FavoriteMovies","ViewHistory","ParsingSourceConfigs"]
+        database: ["AspNetUsers", "AspNetRoles", "AspNetUserRoles", "Movies", "Genres", "MovieGenres",
+            "VideoSources", "MovieLinks", "Reviews", "FavoriteMovies", "ViewHistory", "ParsingSourceConfigs"]
     };
 
     // Структурированные поля для удобства редактирования через модальное окно
     const dbFields = {
         "AspNetUsers": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "Email", type: "varchar256", meta: "UNIQUE" },
-            { name: "UserName", type: "varchar256", meta: "UNIQUE" },
-            { name: "PasswordHash", type: "text", meta: "" },
-            { name: "DisplayName", type: "varchar100", meta: "" },
-            { name: "RegisteredAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Email",
+                "type": "varchar256",
+                "meta": "UNIQUE"
+            },
+            {
+                "name": "UserName",
+                "type": "varchar256",
+                "meta": "UNIQUE"
+            },
+            {
+                "name": "PasswordHash",
+                "type": "text",
+                "meta": ""
+            },
+            {
+                "name": "RegisteredAt",
+                "type": "timestamptz",
+                "meta": ""
+            },
+            {
+                "name": "AmountOfHats",
+                "type": "int",
+                "meta": "DEFAULT 0"
+            }
         ],
         "AspNetRoles": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "Name", type: "varchar50", meta: "UNIQUE" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "Name",
+                "type": "varchar50",
+                "meta": "UNIQUE"
+            }
         ],
         "AspNetUserRoles": [
-            { name: "UserId", type: "int", meta: "[PK] →FK" },
-            { name: "RoleId", type: "int", meta: "[PK] →FK" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "UserId",
+                "type": "int",
+                "meta": "→ FK"
+            },
+            {
+                "name": "RoleId",
+                "type": "int",
+                "meta": "→ FK"
+            }
         ],
         "Movies": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "Title", type: "varchar255", meta: "" },
-            { name: "ReleaseYear", type: "smallint", meta: "" },
-            { name: "PosterUrl", type: "varchar500", meta: "" },
-            { name: "KpRating", type: "numeric3,1", meta: "" },
-            { name: "CreatedAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "RuTitle",
+                "type": "varchar255",
+                "meta": ""
+            },
+            {
+                "name": "UaTitle",
+                "type": "varchar255",
+                "meta": ""
+            },
+            {
+                "name": "RuInEngTitle",
+                "type": "varchar255",
+                "meta": ""
+            },
+            {
+                "name": "ReleaseYear",
+                "type": "smallint",
+                "meta": ""
+            },
+            {
+                "name": "PosterUrl",
+                "type": "varchar500",
+                "meta": ""
+            },
+            {
+                "name": "KpRating",
+                "type": "numeric3,1",
+                "meta": ""
+            },
+            {
+                "name": "CreatedAt",
+                "type": "timestamptz",
+                "meta": ""
+            }
         ],
         "Genres": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "Name", type: "varchar50", meta: "UNIQUE" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "Name",
+                "type": "varchar50",
+                "meta": "UNIQUE"
+            }
         ],
         "MovieGenres": [
-            { name: "MovieId", type: "int", meta: "[PK] →FK" },
-            { name: "GenreId", type: "int", meta: "[PK] →FK" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→ FK"
+            },
+            {
+                "name": "GenreId",
+                "type": "int",
+                "meta": "→ FK"
+            }
         ],
         "VideoSources": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "MovieId", type: "int", meta: "→FK" },
-            { name: "ProviderName", type: "varchar50", meta: "" },
-            { name: "PageUrl", type: "varchar500", meta: "" },
-            { name: "Priority", type: "smallint", meta: "" },
-            { name: "Status", type: "enum", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "ProviderName",
+                "type": "varchar50",
+                "meta": ""
+            },
+            {
+                "name": "PageUrl",
+                "type": "varchar500",
+                "meta": ""
+            },
+            {
+                "name": "Priority",
+                "type": "smallint",
+                "meta": ""
+            },
+            {
+                "name": "Status",
+                "type": "enum",
+                "meta": ""
+            }
         ],
         "MovieLinks": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "MovieId", type: "int", meta: "→FK" },
-            { name: "Quality", type: "enum", meta: "UNIQUE*" },
-            { name: "Url", type: "varchar1000", meta: "" },
-            { name: "UpdatedAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "Quality",
+                "type": "enum",
+                "meta": "UNIQUE*"
+            },
+            {
+                "name": "Url",
+                "type": "varchar1000",
+                "meta": ""
+            },
+            {
+                "name": "UpdatedAt",
+                "type": "timestamptz",
+                "meta": ""
+            }
         ],
         "Reviews": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "MovieId", type: "int", meta: "→FK" },
-            { name: "UserId", type: "int", meta: "→FK" },
-            { name: "Rating", type: "smallint", meta: "" },
-            { name: "Status", type: "enum", meta: "" },
-            { name: "CreatedAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "UserId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "Text",
+                "type": "nvarchar(200)",
+                "meta": ""
+            },
+            {
+                "name": "Rating",
+                "type": "smallint",
+                "meta": ""
+            },
+            {
+                "name": "Status",
+                "type": "enum",
+                "meta": ""
+            },
+            {
+                "name": "CreatedAt",
+                "type": "timestamptz",
+                "meta": ""
+            }
         ],
         "FavoriteMovies": [
-            { name: "UserId", type: "int", meta: "[PK] →FK" },
-            { name: "MovieId", type: "int", meta: "[PK] →FK" },
-            { name: "CreatedAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "UserId",
+                "type": "int",
+                "meta": "→ FK"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→ FK"
+            },
+            {
+                "name": "CreatedAt",
+                "type": "timestamptz",
+                "meta": ""
+            }
         ],
         "ViewHistory": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "UserId", type: "int", meta: "→FK" },
-            { name: "MovieId", type: "int", meta: "→FK" },
-            { name: "ProgressSeconds", type: "int", meta: "" },
-            { name: "CreatedAt", type: "timestamptz", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "UserId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "MovieId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "ProgressSeconds",
+                "type": "int",
+                "meta": ""
+            },
+            {
+                "name": "CreatedAt",
+                "type": "timestamptz",
+                "meta": ""
+            }
         ],
         "ParsingSourceConfigs": [
-            { name: "Id", type: "int", meta: "[PK]" },
-            { name: "Name", type: "varchar50", meta: "UNIQUE" },
-            { name: "BaseUrl", type: "varchar255", meta: "" },
-            { name: "ParserType", type: "varchar50", meta: "" },
-            { name: "IsEnabled", type: "boolean", meta: "" }
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "Name",
+                "type": "varchar50",
+                "meta": "UNIQUE"
+            },
+            {
+                "name": "BaseUrl",
+                "type": "varchar255",
+                "meta": ""
+            },
+            {
+                "name": "ParserType",
+                "type": "varchar50",
+                "meta": ""
+            },
+            {
+                "name": "IsEnabled",
+                "type": "boolean",
+                "meta": ""
+            }
         ]
     };
 
@@ -477,71 +974,73 @@
         ["DependencyInjection", "TelegramFileSender", "depend"],
 
         // --- BACKEND INTERNAL RELATIONS ---
-        ["Movie","MovieGenre","assoc"],["Genre","MovieGenre","assoc"],["Movie","VideoSource","assoc"],
-        ["Movie","MovieLink","assoc"],["Movie","Review","assoc"],
-        ["FavoriteMovie","IUserMovieRelation","realize"],["ViewHistoryEntry","IUserMovieRelation","realize"],
-        ["MovieRepository","IMovieRepository","realize"],["GenreRepository","IGenreRepository","realize"],
-        ["VideoSourceRepository","IVideoSourceRepository","realize"],["MovieLinkRepository","IMovieLinkRepository","realize"],
-        ["ReviewRepository","IReviewRepository","realize"],["UserMovieRelationRepository","IUserMovieRelationRepository","realize"],
-        ["ParsingSourceRepository","IParsingSourceRepository","realize"],["UnitOfWork","IUnitOfWork","realize"],
-        ["JwtTokenService","IJwtTokenService","realize"],["CurrentUserService","ICurrentUserService","realize"],
-        ["RandomBrowserConfig","IBrowserConfig","realize"],["PlaywrightBrowserFactory","IBrowserFactory","realize"],
-        ["RezkaFilmParserFacade","IFilmParserFacade","realize"],["RezkaPageConfig","IPageConfig","realize"],
-        ["RezkaFilmUrlParser","IFilmUrlParser","realize"],["RezkaGearIconParser","IPageElementParser","realize"],
-        ["RezkaVideoQualityMenuParser","IPageElementParser","realize"],["TelegramFileSender","ITelegramFileSender","realize"],
-        ["VideoSizeChecker","IVideoSizeChecker","realize"],
-        ["MovieRepository","CinemaHikesDbContext","depend"],["GenreRepository","CinemaHikesDbContext","depend"],
-        ["VideoSourceRepository","CinemaHikesDbContext","depend"],["MovieLinkRepository","CinemaHikesDbContext","depend"],
-        ["ReviewRepository","CinemaHikesDbContext","depend"],["UserMovieRelationRepository","CinemaHikesDbContext","depend"],
-        ["ParsingSourceRepository","CinemaHikesDbContext","depend"],["UnitOfWork","CinemaHikesDbContext","depend"],
-        ["CinemaHikesDbContext","AppUser","depend"],
-        ["RezkaFilmParserFacade","IBrowserConfig","depend"],["RezkaFilmParserFacade","IBrowserFactory","depend"],
-        ["RezkaFilmParserFacade","IPageConfig","depend"],["RezkaFilmParserFacade","IPageElementParser","depend"],
-        ["RezkaFilmParserFacade","IFilmUrlParser","depend"],["RandomBrowserConfig","BrowserProfileProvider","depend"],
-        ["MovieService","IMovieRepository","depend"],["MovieService","IGenreRepository","depend"],
-        ["MovieService","IVideoSourceRepository","depend"],["MovieDownloadService","IMovieLinkRepository","depend"],
-        ["MovieDownloadService","IVideoSourceRepository","depend"],["MovieDownloadService","IFilmParserFacade","depend"],
-        ["MovieDownloadService","IVideoSizeChecker","depend"],["MovieDownloadService","ITelegramFileSender","depend"],
-        ["TelegramSearchService","IMovieRepository","depend"],["GenreService","IGenreRepository","depend"],
-        ["AuthService","IJwtTokenService","depend"],["FavoriteService","IUserMovieRelationRepository","depend"],
-        ["ViewHistoryService","IUserMovieRelationRepository","depend"],["ReviewService","IReviewRepository","depend"],
-        ["AdminMovieService","IMovieRepository","depend"],["AdminMovieService","IGenreRepository","depend"],
-        ["AdminMovieService","IVideoSourceRepository","depend"],["AdminAnalyticsService","IUserMovieRelationRepository","depend"],
-        ["AdminAnalyticsService","IReviewRepository","depend"],
-        ["RevalidateMovieLinksJob","IMovieLinkRepository","depend"],["RevalidateMovieLinksJob","IFilmParserFacade","depend"],
-        ["MoviesController","MovieService","depend"],["AuthController","AuthService","depend"],
-        ["FavoritesController","FavoriteService","depend"],["HistoryController","ViewHistoryService","depend"],
-        ["ReviewsController","ReviewService","depend"],["AdminMoviesController","AdminMovieService","depend"],
-        ["AdminAnalyticsController","AdminAnalyticsService","depend"],
-        ["SearchTextHandler","TelegramSearchService","depend"],["MovieSelectedCallbackHandler","MovieService","depend"],
-        ["DownloadCallbackHandler","MovieDownloadService","depend"],
+        ["Movie", "MovieGenre", "assoc"], ["Genre", "MovieGenre", "assoc"], ["Movie", "VideoSource", "assoc"],
+        ["Movie", "MovieLink", "assoc"], ["Movie", "Review", "assoc"],
+        ["FavoriteMovie", "IUserMovieRelation", "realize"], ["ViewHistoryEntry", "IUserMovieRelation", "realize"],
+        ["MovieRepository", "IMovieRepository", "realize"], ["GenreRepository", "IGenreRepository", "realize"],
+        ["VideoSourceRepository", "IVideoSourceRepository", "realize"], ["MovieLinkRepository", "IMovieLinkRepository", "realize"],
+        ["ReviewRepository", "IReviewRepository", "realize"], ["UserMovieRelationRepository", "IUserMovieRelationRepository", "realize"],
+        ["ParsingSourceRepository", "IParsingSourceRepository", "realize"], ["UnitOfWork", "IUnitOfWork", "realize"],
+        ["JwtTokenService", "IJwtTokenService", "realize"], ["CurrentUserService", "ICurrentUserService", "realize"],
+        ["RandomBrowserConfig", "IBrowserConfig", "realize"], ["PlaywrightBrowserFactory", "IBrowserFactory", "realize"],
+        ["RezkaFilmParserFacade", "IFilmParserFacade", "realize"], ["RezkaPageConfig", "IPageConfig", "realize"],
+        ["RezkaFilmUrlParser", "IFilmUrlParser", "realize"], ["RezkaGearIconParser", "IPageElementParser", "realize"],
+        ["RezkaVideoQualityMenuParser", "IPageElementParser", "realize"], ["TelegramFileSender", "ITelegramFileSender", "realize"],
+        ["VideoSizeChecker", "IVideoSizeChecker", "realize"],
+        ["MovieRepository", "CinemaHikesDbContext", "depend"], ["GenreRepository", "CinemaHikesDbContext", "depend"],
+        ["VideoSourceRepository", "CinemaHikesDbContext", "depend"], ["MovieLinkRepository", "CinemaHikesDbContext", "depend"],
+        ["ReviewRepository", "CinemaHikesDbContext", "depend"], ["UserMovieRelationRepository", "CinemaHikesDbContext", "depend"],
+        ["ParsingSourceRepository", "CinemaHikesDbContext", "depend"], ["UnitOfWork", "CinemaHikesDbContext", "depend"],
+        ["CinemaHikesDbContext", "AppUser", "depend"],
+        ["RezkaFilmParserFacade", "IBrowserConfig", "depend"], ["RezkaFilmParserFacade", "IBrowserFactory", "depend"],
+        ["RezkaFilmParserFacade", "IPageConfig", "depend"], ["RezkaFilmParserFacade", "IPageElementParser", "depend"],
+        ["RezkaFilmParserFacade", "IFilmUrlParser", "depend"], ["RandomBrowserConfig", "BrowserProfileProvider", "depend"],
+        ["MovieService", "IMovieRepository", "depend"], ["MovieService", "IGenreRepository", "depend"],
+        ["MovieService", "IVideoSourceRepository", "depend"], ["MovieDownloadService", "IMovieLinkRepository", "depend"],
+        ["MovieDownloadService", "IVideoSourceRepository", "depend"], ["MovieDownloadService", "IFilmParserFacade", "depend"],
+        ["MovieDownloadService", "IVideoSizeChecker", "depend"], ["MovieDownloadService", "ITelegramFileSender", "depend"],
+        ["TelegramSearchService", "IMovieRepository", "depend"], ["GenreService", "IGenreRepository", "depend"],
+        ["AuthService", "IJwtTokenService", "depend"], ["FavoriteService", "IUserMovieRelationRepository", "depend"],
+        ["ViewHistoryService", "IUserMovieRelationRepository", "depend"], ["ReviewService", "IReviewRepository", "depend"],
+        ["AdminMovieService", "IMovieRepository", "depend"], ["AdminMovieService", "IGenreRepository", "depend"],
+        ["AdminMovieService", "IVideoSourceRepository", "depend"], ["AdminAnalyticsService", "IUserMovieRelationRepository", "depend"],
+        ["AdminAnalyticsService", "IReviewRepository", "depend"],
+        ["RevalidateMovieLinksJob", "IMovieLinkRepository", "depend"], ["RevalidateMovieLinksJob", "IFilmParserFacade", "depend"],
+        ["MoviesController", "MovieService", "depend"], ["AuthController", "AuthService", "depend"],
+        ["FavoritesController", "FavoriteService", "depend"], ["HistoryController", "ViewHistoryService", "depend"],
+        ["ReviewsController", "ReviewService", "depend"], ["AdminMoviesController", "AdminMovieService", "depend"],
+        ["AdminAnalyticsController", "AdminAnalyticsService", "depend"],
+        ["SearchTextHandler", "TelegramSearchService", "depend"], ["MovieSelectedCallbackHandler", "MovieService", "depend"],
+        ["DownloadCallbackHandler", "MovieDownloadService", "depend"],
 
-        ["MovieDownloadService","IUnitOfWork","depend"],["AdminMovieService","IUnitOfWork","depend"],
-        ["ReviewService","IUnitOfWork","depend"],["FavoriteService","IUnitOfWork","depend"],
-        ["ViewHistoryService","IUnitOfWork","depend"],["AdminUserService","IUnitOfWork","depend"],
-        ["AdminSourceService","IUnitOfWork","depend"],
-        ["FavoriteService","ICurrentUserService","depend"],["ViewHistoryService","ICurrentUserService","depend"],
-        ["ReviewService","ICurrentUserService","depend"],
+        ["MovieDownloadService", "IUnitOfWork", "depend"], ["AdminMovieService", "IUnitOfWork", "depend"],
+        ["ReviewService", "IUnitOfWork", "depend"], ["FavoriteService", "IUnitOfWork", "depend"],
+        ["ViewHistoryService", "IUnitOfWork", "depend"], ["AdminUserService", "IUnitOfWork", "depend"],
+        ["AdminSourceService", "IUnitOfWork", "depend"],
+        ["FavoriteService", "ICurrentUserService", "depend"], ["ViewHistoryService", "ICurrentUserService", "depend"],
+        ["ReviewService", "ICurrentUserService", "depend"],
 
-        ["GenresController","GenreService","depend"],
-        ["AdminUsersController","AdminUserService","depend"],
-        ["AdminSourcesController","AdminSourceService","depend"],
-        ["AdminSourceService","IParsingSourceRepository","depend"],["AdminSourceService","IVideoSourceRepository","depend"],
+        ["GenresController", "GenreService", "depend"],
+        ["AdminUsersController", "AdminUserService", "depend"],
+        ["AdminSourcesController", "AdminSourceService", "depend"],
+        ["AdminSourceService", "IParsingSourceRepository", "depend"], ["AdminSourceService", "IVideoSourceRepository", "depend"],
+        ["ParsingSourceRepository", "ParsingSourceConfig", "depend"], ["AdminSourceService", "ParsingSourceConfig", "depend"],
+        ["VideoSource", "SourceStatus", "depend"], ["MovieLink", "VideoQuality", "depend"], ["Review", "ReviewStatus", "depend"],
 
         // --- DATABASE RELATIONS ---
-        ["Movies","MovieGenres","assoc"],["Genres","MovieGenres","assoc"],
-        ["Movies","VideoSources","assoc"],["Movies","MovieLinks","assoc"],["Movies","Reviews","assoc"],
-        ["Movies","FavoriteMovies","assoc"],["Movies","ViewHistory","assoc"],
-        ["AspNetUsers","Reviews","assoc"],["AspNetUsers","FavoriteMovies","assoc"],["AspNetUsers","ViewHistory","assoc"],
-        ["AspNetUsers","AspNetUserRoles","assoc"],["AspNetRoles","AspNetUserRoles","assoc"],
+        ["Movies", "MovieGenres", "assoc"], ["Genres", "MovieGenres", "assoc"],
+        ["Movies", "VideoSources", "assoc"], ["Movies", "MovieLinks", "assoc"], ["Movies", "Reviews", "assoc"],
+        ["Movies", "FavoriteMovies", "assoc"], ["Movies", "ViewHistory", "assoc"],
+        ["AspNetUsers", "Reviews", "assoc"], ["AspNetUsers", "FavoriteMovies", "assoc"], ["AspNetUsers", "ViewHistory", "assoc"],
+        ["AspNetUsers", "AspNetUserRoles", "assoc"], ["AspNetRoles", "AspNetUserRoles", "assoc"],
 
-        ["CinemaHikesDbContext","Movies","depend"],["CinemaHikesDbContext","Genres","depend"],
-        ["CinemaHikesDbContext","MovieGenres","depend"],["CinemaHikesDbContext","VideoSources","depend"],
-        ["CinemaHikesDbContext","MovieLinks","depend"],["CinemaHikesDbContext","Reviews","depend"],
-        ["CinemaHikesDbContext","FavoriteMovies","depend"],["CinemaHikesDbContext","ViewHistory","depend"],
-        ["CinemaHikesDbContext","ParsingSourceConfigs","depend"],
-        ["CinemaHikesDbContext","AspNetUsers","depend"],["CinemaHikesDbContext","AspNetRoles","depend"],
-        ["CinemaHikesDbContext","AspNetUserRoles","depend"]
+        ["CinemaHikesDbContext", "Movies", "depend"], ["CinemaHikesDbContext", "Genres", "depend"],
+        ["CinemaHikesDbContext", "MovieGenres", "depend"], ["CinemaHikesDbContext", "VideoSources", "depend"],
+        ["CinemaHikesDbContext", "MovieLinks", "depend"], ["CinemaHikesDbContext", "Reviews", "depend"],
+        ["CinemaHikesDbContext", "FavoriteMovies", "depend"], ["CinemaHikesDbContext", "ViewHistory", "depend"],
+        ["CinemaHikesDbContext", "ParsingSourceConfigs", "depend"],
+        ["CinemaHikesDbContext", "AspNetUsers", "depend"], ["CinemaHikesDbContext", "AspNetRoles", "depend"],
+        ["CinemaHikesDbContext", "AspNetUserRoles", "depend"]
     ];
 
     const COLS = 9, COL_W = 240, ROW_H = 130, CARD_W = 210, BAND_GAP = 90, PAD = 40;
@@ -566,7 +1065,7 @@
         const extraGap = layerName === "database" ? 70 : 0;
         bandY += extraGap;
         if (layerName === "database") {
-            bandLabels[layerName] = { y: bandY - 34, text: "БАЗА ДАННЫХ (PostgreSQL) — отдельный блок" };
+            bandLabels[layerName] = {y: bandY - 34, text: "БАЗА ДАННЫХ (PostgreSQL) — отдельный блок"};
         }
 
         const rowsCount = Math.ceil(names.length / COLS);
@@ -579,7 +1078,7 @@
                 : ROW_H;
 
             rowNames.forEach((name, i) => {
-                positions[name] = { x: PAD + i * COL_W, y: localY, layer: cssLayer };
+                positions[name] = {x: PAD + i * COL_W, y: localY, layer: cssLayer};
             });
             localY += rowHeight;
         }
@@ -663,7 +1162,10 @@
         row.innerHTML = `<input type="text" placeholder="имя: тип"><button class="remove">×</button>`;
         const input = row.querySelector('input');
         const removeBtn = row.querySelector('.remove');
-        removeBtn.addEventListener('click', () => { row.remove(); redrawEdges(); });
+        removeBtn.addEventListener('click', () => {
+            row.remove();
+            redrawEdges();
+        });
         input.addEventListener('input', () => redrawEdges());
         container.appendChild(row);
         if (focus) input.focus();
@@ -677,14 +1179,54 @@
         });
     });
 
+    // --- Поля Entities на основе dbFields (только уже существующие карточки, без новых элементов) ---
+    const entityFieldData = {
+        "Movie": ["Id: int", "RuTitle: string", "UaTitle: string", "RuInEngTitle: string", "ReleaseYear: short", "PosterUrl: string", "KpRating: decimal", "CreatedAt: DateTime"],
+        "Genre": ["Id: int", "Name: string"],
+        "MovieGenre": ["Id: int", "MovieId: int", "GenreId: int"],
+        "VideoSource": ["Id: int", "MovieId: int", "ProviderName: string", "PageUrl: string", "Priority: short", "Status: SourceStatus"],
+        "MovieLink": ["Id: int", "MovieId: int", "Quality: VideoQuality", "Url: string", "UpdatedAt: DateTime"],
+        "Review": ["Id: int", "MovieId: int", "UserId: int", "Text: string", "Rating: short", "Status: ReviewStatus", "CreatedAt: DateTime"],
+        "FavoriteMovie": ["Id: int", "UserId: int", "MovieId: int", "CreatedAt: DateTime"],
+        "ViewHistoryEntry": ["Id: int", "UserId: int", "MovieId: int", "ProgressSeconds: int", "CreatedAt: DateTime"],
+        "ParsingSourceConfig": ["Id: int", "Name: string", "BaseUrl: string", "ParserType: string", "IsEnabled: bool"],
+        "AppUser": ["RegisteredAt: DateTime", "AmountOfHats: int"],
+        "SourceStatus": ["Active", "Dead", "Checking"],
+        "VideoQuality": ["Q360", "Q480", "Q720", "Q1080"],
+        "ReviewStatus": ["Pending", "Approved", "Rejected"]
+    };
+
+    function addFilledRow(container, text) {
+        const row = document.createElement('div');
+        row.className = 'row-item';
+        row.innerHTML = `<input type="text" placeholder="имя: тип" value="${text}"><button class="remove">×</button>`;
+        const input = row.querySelector('input');
+        const removeBtn = row.querySelector('.remove');
+        removeBtn.addEventListener('click', () => {
+            row.remove();
+            redrawEdges();
+        });
+        input.addEventListener('mousedown', e => e.stopPropagation());
+        input.addEventListener('input', () => redrawEdges());
+        container.appendChild(row);
+    }
+
+    Object.keys(entityFieldData).forEach(className => {
+        const card = cardEls[className];
+        if (!card) return;
+        const fieldSection = card.querySelector('.card-section[data-type="field"] .rows');
+        if (!fieldSection) return;
+        entityFieldData[className].forEach(fieldText => addFilledRow(fieldSection, fieldText));
+    });
+
     function clipPoint(cx, cy, w, h, tx, ty) {
         const dx = tx - cx, dy = ty - cy;
-        if (dx === 0 && dy === 0) return { x: cx, y: cy };
+        if (dx === 0 && dy === 0) return {x: cx, y: cy};
         const halfW = w / 2, halfH = h / 2;
         const sx = dx !== 0 ? halfW / Math.abs(dx) : Infinity;
         const sy = dy !== 0 ? halfH / Math.abs(dy) : Infinity;
         const s = Math.min(sx, sy);
-        return { x: cx + dx * s, y: cy + dy * s };
+        return {x: cx + dx * s, y: cy + dy * s};
     }
 
     function redrawEdges() {
@@ -708,6 +1250,7 @@
         const defs = svg.querySelector('defs').outerHTML;
         svg.innerHTML = defs + lines.join('');
     }
+
     redrawEdges();
 
     // --- Логика выделения карточек и связей ---
@@ -793,10 +1336,12 @@
                 window.removeEventListener('mousemove', onMove);
                 window.removeEventListener('mouseup', onUp);
             }
+
             window.addEventListener('mousemove', onMove);
             window.addEventListener('mouseup', onUp);
         });
     }
+
     document.querySelectorAll('.card-header').forEach(attachHeaderEvents);
 
     // --- Модальное окно редактора DB полей ---
@@ -830,7 +1375,9 @@
         row.querySelector('.remove-btn').addEventListener('click', () => row.remove());
 
         const handle = row.querySelector('.drag-handle');
-        handle.addEventListener('mousedown', () => { row.draggable = true; });
+        handle.addEventListener('mousedown', () => {
+            row.draggable = true;
+        });
         row.addEventListener('dragstart', (e) => {
             row.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
@@ -850,10 +1397,10 @@
             const box = row.getBoundingClientRect();
             const offset = y - box.top - box.height / 2;
             if (offset < 0 && offset > closest.offset) {
-                return { offset, element: row };
+                return {offset, element: row};
             }
             return closest;
-        }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+        }, {offset: Number.NEGATIVE_INFINITY, element: null}).element;
     }
 
     modalFieldsContainer.addEventListener('dragover', (e) => {
@@ -888,7 +1435,7 @@
             const type = r.querySelector('.input-type').value.trim();
             const meta = r.querySelector('.input-meta').value.trim();
             if (name) {
-                newFields.push({ name, type, meta });
+                newFields.push({name, type, meta});
             }
         });
 
@@ -926,7 +1473,10 @@
             if (ch === '{') depth++;
             else if (ch === '}') {
                 depth--;
-                if (depth === 0) { endBraceIdx = i; break; }
+                if (depth === 0) {
+                    endBraceIdx = i;
+                    break;
+                }
             }
         }
         if (endBraceIdx === -1) return sourceText;
@@ -944,7 +1494,7 @@
     document.getElementById('saveFile').addEventListener('click', () => {
         const patchedHtml = replaceDbFieldsBlock(ORIGINAL_HTML, dbFields);
         const htmlContent = "<!DOCTYPE html>\n" + patchedHtml;
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const blob = new Blob([htmlContent], {type: 'text/html;charset=utf-8'});
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = 'architecture_uml_diagram.html';
@@ -978,6 +1528,7 @@
         ty = (vpRect.height - CANVAS_H * scale) / 2;
         apply();
     }
+
     fitToView();
 
     viewport.addEventListener('wheel', (e) => {
@@ -991,43 +1542,58 @@
         ty = my - (my - ty) * ratio;
         scale = newScale;
         apply();
-    }, { passive: false });
+    }, {passive: false});
 
     viewport.addEventListener('mousedown', (e) => {
         if (e.target === viewport || e.target === canvas || e.target === svg) {
             clearHighlights();
         }
-        isPanning = true; lastX = e.clientX; lastY = e.clientY;
+        isPanning = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
         viewport.classList.add('dragging-canvas');
     });
 
     window.addEventListener('mousemove', (e) => {
         if (!isPanning) return;
-        tx += e.clientX - lastX; ty += e.clientY - lastY;
-        lastX = e.clientX; lastY = e.clientY;
+        tx += e.clientX - lastX;
+        ty += e.clientY - lastY;
+        lastX = e.clientX;
+        lastY = e.clientY;
         apply();
     });
-    window.addEventListener('mouseup', () => { isPanning = false; viewport.classList.remove('dragging-canvas'); });
+    window.addEventListener('mouseup', () => {
+        isPanning = false;
+        viewport.classList.remove('dragging-canvas');
+    });
 
     document.getElementById('zoomIn').addEventListener('click', () => {
         const rect = viewport.getBoundingClientRect();
         const cx = rect.width / 2, cy = rect.height / 2;
         const newScale = Math.min(8, scale * 1.25);
         const ratio = newScale / scale;
-        tx = cx - (cx - tx) * ratio; ty = cy - (cy - ty) * ratio;
-        scale = newScale; apply();
+        tx = cx - (cx - tx) * ratio;
+        ty = cy - (cy - ty) * ratio;
+        scale = newScale;
+        apply();
     });
     document.getElementById('zoomOut').addEventListener('click', () => {
         const rect = viewport.getBoundingClientRect();
         const cx = rect.width / 2, cy = rect.height / 2;
         const newScale = Math.max(0.05, scale / 1.25);
         const ratio = newScale / scale;
-        tx = cx - (cx - tx) * ratio; ty = cy - (cy - ty) * ratio;
-        scale = newScale; apply();
+        tx = cx - (cx - tx) * ratio;
+        ty = cy - (cy - ty) * ratio;
+        scale = newScale;
+        apply();
     });
     document.getElementById('zoomFit').addEventListener('click', fitToView);
-    document.getElementById('zoomReset').addEventListener('click', () => { scale = 1; tx = 0; ty = 0; apply(); });
+    document.getElementById('zoomReset').addEventListener('click', () => {
+        scale = 1;
+        tx = 0;
+        ty = 0;
+        apply();
+    });
 </script>
-
 </body>
 </html>
