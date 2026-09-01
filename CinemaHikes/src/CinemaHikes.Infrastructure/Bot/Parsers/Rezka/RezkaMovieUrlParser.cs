@@ -1,11 +1,11 @@
+using CinemaHikes.Domain.Interfaces.Bot.Parsers;
 using Microsoft.Playwright;
-using TelegramBotDownloader.Application.Interfaces.Parsers;
 
-namespace TelegramBotDownloader.Infrastructure.Parsers.Rezka;
+namespace CinemaHikes.Infrastructure.Bot.Parsers.Rezka;
 
-public class RezkaFilmUrlParser : IFilmUrlParser
+public class RezkaMovieUrlParser : IMovieUrlParser
 {
-    public async Task<string> GetFilmUrlAsync(IPage page, string videoQuality)
+     public async Task<string> GetMovieUrlAsync(IPage page, string videoQuality)
     {
         int choiceId = GetVideoIdByQuality(videoQuality);
 

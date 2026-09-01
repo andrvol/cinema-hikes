@@ -1,14 +1,14 @@
-using TelegramBotDownloader.Application.Interfaces;
-using TelegramBotDownloader.Application.Interfaces.Parsers;
-using TelegramBotDownloader.Infrastructure.Configs;
-using TelegramBotDownloader.Infrastructure.Factories;
-using TelegramBotDownloader.Infrastructure.Parsers.Rezka;
+using CinemaHikes.Domain.Interfaces.Bot;
+using CinemaHikes.Domain.Interfaces.Bot.Parsers;
+using CinemaHikes.Infrastructure.Bot.Configs;
+using CinemaHikes.Infrastructure.Bot.Factories;
+using CinemaHikes.Infrastructure.Bot.Parsers.Rezka;
 
-namespace TelegramBotDownloader.Infrastructure.Facades;
+namespace CinemaHikes.Infrastructure.Bot.Facades;
 
-public class RezkaFilmParserFacade : IFilmParserFacade
+public class RezkaMovieParserFacade : IMovieParserFacade
 {
-    public async Task<string> GetFilmSrc(string pageUrl, string videoQuality)
+    public async Task<string> GetMovieSrc(string pageUrl, string videoQuality)
     {
         IBrowserConfig kievBrowserConfig = new RandomBrowserConfig();
         
@@ -24,8 +24,8 @@ public class RezkaFilmParserFacade : IFilmParserFacade
         IPageElementParser qualityMenuParser = new RezkaVideoQualityMenuParser();
         await qualityMenuParser.ParseElementAsync(page);
 
-        IFilmUrlParser filmUrlParser = new RezkaFilmUrlParser();
-        string url = await filmUrlParser.GetFilmUrlAsync(page, videoQuality);
+        IMovieUrlParser movieUrlParser = new RezkaMovieUrlParser();
+        string url = await movieUrlParser.GetMovieUrlAsync(page, videoQuality);
         
         return url;
     }

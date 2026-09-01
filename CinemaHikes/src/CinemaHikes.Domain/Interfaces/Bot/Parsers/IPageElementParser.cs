@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace TelegramBotDownloader.Application.Interfaces.Parsers;
+namespace CinemaHikes.Domain.Interfaces.Bot.Parsers;
 
 public interface IPageElementParser
 {

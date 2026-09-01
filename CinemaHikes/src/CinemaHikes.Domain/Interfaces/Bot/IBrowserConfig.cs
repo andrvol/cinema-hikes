@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace TelegramBotDownloader.Application.Interfaces;
+namespace CinemaHikes.Domain.Interfaces.Bot;
 
 public interface IBrowserConfig
 {

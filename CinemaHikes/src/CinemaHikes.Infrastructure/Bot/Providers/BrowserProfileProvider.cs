@@ -1,7 +1,7 @@
+using CinemaHikes.Infrastructure.Bot.Configs;
 using Microsoft.Playwright;
-using TelegramBotDownloader.Infrastructure.Configs;
 
-namespace TelegramBotDownloader.Infrastructure.Providers;
+namespace CinemaHikes.Infrastructure.Bot.Providers;
 
 public static class BrowserProfileProvider
 {
