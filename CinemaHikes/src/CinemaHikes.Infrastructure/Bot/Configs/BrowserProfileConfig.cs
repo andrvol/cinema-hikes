@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace TelegramBotDownloader.Infrastructure.Configs;
+namespace CinemaHikes.Infrastructure.Bot.Configs;
 
 public record BrowserProfileConfig(
     string UserAgent,

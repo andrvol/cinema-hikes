@@ -1,8 +1,8 @@
+using CinemaHikes.Domain.Interfaces.Bot;
+using CinemaHikes.Infrastructure.Bot.Providers;
 using Microsoft.Playwright;
-using TelegramBotDownloader.Application.Interfaces;
-using TelegramBotDownloader.Infrastructure.Providers;
 
-namespace TelegramBotDownloader.Infrastructure.Configs;
+namespace CinemaHikes.Infrastructure.Bot.Configs;
 
 public class RandomBrowserConfig : IBrowserConfig
 {

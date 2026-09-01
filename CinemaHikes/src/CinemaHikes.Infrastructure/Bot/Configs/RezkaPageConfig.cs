@@ -1,7 +1,7 @@
+using CinemaHikes.Domain.Interfaces.Bot;
 using Microsoft.Playwright;
-using TelegramBotDownloader.Application.Interfaces;
 
-namespace TelegramBotDownloader.Infrastructure.Configs;
+namespace CinemaHikes.Infrastructure.Bot.Configs;
 
 public class RezkaPageConfig : IPageConfig
 {

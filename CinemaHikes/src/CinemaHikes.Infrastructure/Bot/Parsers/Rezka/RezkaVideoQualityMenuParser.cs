@@ -1,8 +1,7 @@
+using CinemaHikes.Domain.Interfaces.Bot.Parsers;
 using Microsoft.Playwright;
-using TelegramBotDownloader.Application.Interfaces;
-using TelegramBotDownloader.Application.Interfaces.Parsers;
 
-namespace TelegramBotDownloader.Infrastructure.Parsers.Rezka;
+namespace CinemaHikes.Infrastructure.Bot.Parsers.Rezka;
 
 public class RezkaVideoQualityMenuParser : IPageElementParser
 {
