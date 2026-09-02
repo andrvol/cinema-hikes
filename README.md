@@ -22,6 +22,7 @@ CinemaHikes.slnx
 │   │   │       ├── Genre.cs
 │   │   │       ├── MovieGenre.cs                # join-таблица
 │   │   │       ├── VideoSource.cs               # плеер/источник: PageUrl на сайт-источник (FR-04)
+│   │   │       ├── TranslationStudio.cs
 │   │   │       ├── MovieLink.cs                 # MovieId, Quality, Url — прямая ссылка (FR-06), обычная таблица без TTL
 │   │   │       └── Review.cs
 │   │   │
@@ -39,7 +40,9 @@ CinemaHikes.slnx
 │   │   │   │   ├── IGenreRepository.cs
 │   │   │   │   ├── IVideoSourceRepository.cs
 │   │   │   │   ├── IMovieLinkRepository.cs           # обычный CRUD над movie_links
+│   │   │   │   ├── ITranslationStudioRepository.cs
 │   │   │   │   ├── IReviewRepository.cs
+│   │   │   │   ├── ITranslationStudioRepository.cs
 │   │   │   │   ├── IUserMovieRelationRepository.cs   # generic<T> — Favorite/History
 │   │   │   │   └── IParsingSourceRepository.cs
 │   │   │   ├── IUserMovieRelation.cs
@@ -84,6 +87,8 @@ CinemaHikes.slnx
 │   │   │   │   ├── MovieDetailsDto.cs
 │   │   │   │   ├── VideoSourceDto.cs
 │   │   │   │   ├── GenreDto.cs
+│   │   │   │   ├── TranslationStudioDto.cs
+│   │   │   │   ├── MovieLinkDto.cs
 │   │   │   │   └── ReviewDto.cs
 │   │   │   ├── Auth/
 │   │   │   │   ├── RegisterRequestDto.cs
@@ -99,6 +104,7 @@ CinemaHikes.slnx
 │   │   ├── Validators/
 │   │   │   ├── RegisterRequestValidator.cs      # пароль >= 6 символов (FR-08 AC)
 │   │   │   ├── MovieCreateValidator.cs
+│   │   │   ├── TranslationStudioValidator.cs
 │   │   │   └── ParsingSourceValidator.cs
 │   │   │
 │   │   └── Mappings/
@@ -117,6 +123,7 @@ CinemaHikes.slnx
 │   │   │   │   ├── VideoSourceEntityTypeConfiguration.cs
 │   │   │   │   ├── MovieLinkEntityTypeConfiguration.cs     # unique index (MovieId, Quality)
 │   │   │   │   ├── ParsingSourceConfigEntityTypeConfiguration.cs
+│   │   │   │   ├── TranslationStudioTypeConfiguration.cs
 │   │   │   │   └── ...
 │   │   │   └── Migrations/
 │   │   │
@@ -129,6 +136,7 @@ CinemaHikes.slnx
 │   │   │   │   ├── MovieRepository.cs
 │   │   │   │   ├── GenreRepository.cs
 │   │   │   │   ├── VideoSourceRepository.cs
+│   │   │   │   ├── TranslationStudioRepository.cs
 │   │   │   │   ├── MovieLinkRepository.cs        # GetByMovieAndQuality, Upsert
 │   │   │   │   └── ReviewRepository.cs
 │   │   │   ├── Users/
@@ -353,12 +361,17 @@ CinemaHikes Database (PostgreSQL)
 │   │   ├── Priority                smallint
 │   │   └── Status                   enum (SourceStatus)
 │   │
+│   ├── TranslationStudios
+│   │   ├── Id              int             [PK]
+│   │   └── Name            varchar50
+│   │
 │   ├── MovieLinks                      # прямая ссылка (FR-06), обычная таблица без TTL
 │   │   ├── Id               int           [PK]
 │   │   ├── MovieId            int           → FK Movies
+│   │   ├── TranslationStudioId            int           → FK TranslationStudios
 │   │   ├── Quality             enum (VideoQuality)   UNIQUE*
 │   │   ├── Url                  varchar1000
-│   │   └── UpdatedAt              timestamptz          # * UNIQUE(MovieId, Quality)
+│   │   └── UpdatedAt              timestamptz          # * UNIQUE(MovieId, Quality, TranslationStudioId)
 │   │
 │   └── Reviews
 │       ├── Id               int           [PK]

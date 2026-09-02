@@ -593,14 +593,14 @@
         // --- BACKEND ---
         webapi: ["Program.cs (WebApi)", "MoviesController", "GenresController", "AuthController", "FavoritesController", "HistoryController", "ReviewsController", "AdminMoviesController", "AdminSourcesController", "AdminAnalyticsController", "AdminUsersController"],
         application: ["MovieService", "MovieDownloadService", "TelegramSearchService", "GenreService", "AuthService", "FavoriteService", "ViewHistoryService", "ReviewService", "AdminMovieService", "AdminSourceService", "AdminUserService", "AdminAnalyticsService"],
-        domain: ["Movie", "Genre", "MovieGenre", "VideoSource", "MovieLink", "Review", "FavoriteMovie", "ViewHistoryEntry", "ParsingSourceConfig",
+        domain: ["Movie", "Genre", "MovieGenre", "VideoSource", "TranslationStudio", "MovieLink", "Review", "FavoriteMovie", "ViewHistoryEntry", "ParsingSourceConfig",
             "SourceStatus", "VideoQuality", "ReviewStatus",
-            "IUserMovieRelation", "IMovieRepository", "IGenreRepository", "IVideoSourceRepository", "IMovieLinkRepository",
+            "IUserMovieRelation", "IMovieRepository", "IGenreRepository", "IVideoSourceRepository", "ITranslationStudioRepository", "IMovieLinkRepository",
             "IReviewRepository", "IUserMovieRelationRepository", "IParsingSourceRepository", "IUnitOfWork", "IJwtTokenService",
             "ICurrentUserService", "IBrowserConfig", "IBrowserFactory", "IFilmParserFacade", "IPageConfig", "IFilmUrlParser",
             "IPageElementParser", "ITelegramFileSender", "IVideoSizeChecker"],
         infrastructure: ["DependencyInjection", "CinemaHikesDbContext", "AppUser", "MovieRepository", "GenreRepository", "VideoSourceRepository",
-            "MovieLinkRepository", "ReviewRepository", "UserMovieRelationRepository", "ParsingSourceRepository", "UnitOfWork",
+            "TranslationStudioRepository", "MovieLinkRepository", "ReviewRepository", "UserMovieRelationRepository", "ParsingSourceRepository", "UnitOfWork",
             "RandomBrowserConfig", "RezkaPageConfig", "RezkaFilmParserFacade", "PlaywrightBrowserFactory", "RezkaFilmUrlParser",
             "RezkaGearIconParser", "RezkaVideoQualityMenuParser", "BrowserProfileProvider", "TelegramFileSender",
             "VideoSizeChecker", "JwtTokenService", "CurrentUserService", "RevalidateMovieLinksJob"],
@@ -608,7 +608,7 @@
 
         // --- DATABASE (PostgreSQL) ---
         database: ["AspNetUsers", "AspNetRoles", "AspNetUserRoles", "Movies", "Genres", "MovieGenres",
-            "VideoSources", "MovieLinks", "Reviews", "FavoriteMovies", "ViewHistory", "ParsingSourceConfigs"]
+            "VideoSources", "TranslationStudios", "MovieLinks", "Reviews", "FavoriteMovies", "ViewHistory", "ParsingSourceConfigs"]
     };
 
     // Структурированные поля для удобства редактирования через модальное окно
@@ -772,6 +772,18 @@
                 "meta": ""
             }
         ],
+        "TranslationStudios": [
+            {
+                "name": "Id",
+                "type": "int",
+                "meta": "[PK]"
+            },
+            {
+                "name": "Name",
+                "type": "varchar50",
+                "meta": ""
+            }
+        ],
         "MovieLinks": [
             {
                 "name": "Id",
@@ -780,6 +792,11 @@
             },
             {
                 "name": "MovieId",
+                "type": "int",
+                "meta": "→FK"
+            },
+            {
+                "name": "TranslationStudioId",
                 "type": "int",
                 "meta": "→FK"
             },
@@ -978,7 +995,8 @@
         ["Movie", "MovieLink", "assoc"], ["Movie", "Review", "assoc"],
         ["FavoriteMovie", "IUserMovieRelation", "realize"], ["ViewHistoryEntry", "IUserMovieRelation", "realize"],
         ["MovieRepository", "IMovieRepository", "realize"], ["GenreRepository", "IGenreRepository", "realize"],
-        ["VideoSourceRepository", "IVideoSourceRepository", "realize"], ["MovieLinkRepository", "IMovieLinkRepository", "realize"],
+        ["VideoSourceRepository", "IVideoSourceRepository", "realize"], ["TranslationStudioRepository", "ITranslationStudioRepository", "realize"],
+        ["MovieLinkRepository", "IMovieLinkRepository", "realize"],
         ["ReviewRepository", "IReviewRepository", "realize"], ["UserMovieRelationRepository", "IUserMovieRelationRepository", "realize"],
         ["ParsingSourceRepository", "IParsingSourceRepository", "realize"], ["UnitOfWork", "IUnitOfWork", "realize"],
         ["JwtTokenService", "IJwtTokenService", "realize"], ["CurrentUserService", "ICurrentUserService", "realize"],
@@ -988,7 +1006,8 @@
         ["RezkaVideoQualityMenuParser", "IPageElementParser", "realize"], ["TelegramFileSender", "ITelegramFileSender", "realize"],
         ["VideoSizeChecker", "IVideoSizeChecker", "realize"],
         ["MovieRepository", "CinemaHikesDbContext", "depend"], ["GenreRepository", "CinemaHikesDbContext", "depend"],
-        ["VideoSourceRepository", "CinemaHikesDbContext", "depend"], ["MovieLinkRepository", "CinemaHikesDbContext", "depend"],
+        ["VideoSourceRepository", "CinemaHikesDbContext", "depend"], ["TranslationStudioRepository", "CinemaHikesDbContext", "depend"],
+        ["MovieLinkRepository", "CinemaHikesDbContext", "depend"],
         ["ReviewRepository", "CinemaHikesDbContext", "depend"], ["UserMovieRelationRepository", "CinemaHikesDbContext", "depend"],
         ["ParsingSourceRepository", "CinemaHikesDbContext", "depend"], ["UnitOfWork", "CinemaHikesDbContext", "depend"],
         ["CinemaHikesDbContext", "AppUser", "depend"],
@@ -1029,13 +1048,15 @@
 
         // --- DATABASE RELATIONS ---
         ["Movies", "MovieGenres", "assoc"], ["Genres", "MovieGenres", "assoc"],
-        ["Movies", "VideoSources", "assoc"], ["Movies", "MovieLinks", "assoc"], ["Movies", "Reviews", "assoc"],
+        ["Movies", "VideoSources", "assoc"], ["Movies", "MovieLinks", "assoc"], ["TranslationStudios", "MovieLinks", "assoc"],
+        ["Movies", "Reviews", "assoc"],
         ["Movies", "FavoriteMovies", "assoc"], ["Movies", "ViewHistory", "assoc"],
         ["AspNetUsers", "Reviews", "assoc"], ["AspNetUsers", "FavoriteMovies", "assoc"], ["AspNetUsers", "ViewHistory", "assoc"],
         ["AspNetUsers", "AspNetUserRoles", "assoc"], ["AspNetRoles", "AspNetUserRoles", "assoc"],
 
         ["CinemaHikesDbContext", "Movies", "depend"], ["CinemaHikesDbContext", "Genres", "depend"],
         ["CinemaHikesDbContext", "MovieGenres", "depend"], ["CinemaHikesDbContext", "VideoSources", "depend"],
+        ["CinemaHikesDbContext", "TranslationStudios", "depend"],
         ["CinemaHikesDbContext", "MovieLinks", "depend"], ["CinemaHikesDbContext", "Reviews", "depend"],
         ["CinemaHikesDbContext", "FavoriteMovies", "depend"], ["CinemaHikesDbContext", "ViewHistory", "depend"],
         ["CinemaHikesDbContext", "ParsingSourceConfigs", "depend"],
@@ -1185,7 +1206,8 @@
         "Genre": ["Id: int", "Name: string"],
         "MovieGenre": ["Id: int", "MovieId: int", "GenreId: int"],
         "VideoSource": ["Id: int", "MovieId: int", "ProviderName: string", "PageUrl: string", "Priority: short", "Status: SourceStatus"],
-        "MovieLink": ["Id: int", "MovieId: int", "Quality: VideoQuality", "Url: string", "UpdatedAt: DateTime"],
+        "TranslationStudio": ["Id: int", "Name: string"],
+        "MovieLink": ["Id: int", "MovieId: int", "TranslationStudioId: int", "Quality: VideoQuality", "Url: string", "UpdatedAt: DateTime"],
         "Review": ["Id: int", "MovieId: int", "UserId: int", "Text: string", "Rating: short", "Status: ReviewStatus", "CreatedAt: DateTime"],
         "FavoriteMovie": ["Id: int", "UserId: int", "MovieId: int", "CreatedAt: DateTime"],
         "ViewHistoryEntry": ["Id: int", "UserId: int", "MovieId: int", "ProgressSeconds: int", "CreatedAt: DateTime"],
@@ -1458,15 +1480,11 @@
     });
 
     // --- Функционал СОХРАНЕНИЯ файла .html с текущим состоянием ---
-    // Патчим только данные dbFields внутри ЧИСТОГО исходника (ORIGINAL_HTML, без карточек).
-    // Карточки в сохранённом файле не хранятся статикой — при открытии скрипт создаст их
-    // заново с нуля из (уже обновлённых) данных, поэтому дублей быть не может.
     function replaceDbFieldsBlock(sourceText, fieldsObj) {
         const startMarker = 'const dbFields = {';
         const startIdx = sourceText.indexOf(startMarker);
-        if (startIdx === -1) return sourceText; // на всякий случай — маркер не найден, не трогаем файл
+        if (startIdx === -1) return sourceText;
 
-        // Ищем парную закрывающую скобку объекта dbFields, считая вложенность
         let depth = 0, endBraceIdx = -1;
         for (let i = startIdx + startMarker.length - 1; i < sourceText.length; i++) {
             const ch = sourceText[i];
@@ -1481,7 +1499,6 @@
         }
         if (endBraceIdx === -1) return sourceText;
 
-        // Точка с запятой сразу после закрывающей скобки объекта
         let semiIdx = endBraceIdx + 1;
         while (semiIdx < sourceText.length && sourceText[semiIdx] !== ';') semiIdx++;
 
