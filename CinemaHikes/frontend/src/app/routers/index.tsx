@@ -6,7 +6,12 @@ import { MainLayout } from "../../layouts/MainLayout";
 import { AboutPage } from "../../pages/public/AboutPage";
 import { DeveloperPage } from '../../pages/public/DeveloperPage';
 import { NotFoundPage } from "../../pages/public/NotFoundPage";
+import { LoginPage } from "../../pages/auth/LoginPage";
 export const router = createBrowserRouter([
+  { 
+    path: "/login", 
+    element: <LoginPage /> 
+  },
   {
     path: "/",
     element: <MainLayout />,
