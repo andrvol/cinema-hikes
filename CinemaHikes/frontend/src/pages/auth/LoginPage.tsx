@@ -39,7 +39,7 @@ export const LoginPage = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      message.success("Welcome,pirat");
+      message.success(`Welcome, ${values.username}`);
       navigate("/");
     }, 1500);
   };
